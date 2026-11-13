@@ -235,3 +235,93 @@ async def ask_question(
         "grounded": grounded,
         "citations": citations,
     }
+
+
+async def ask_demo_question(
+    db: AsyncSession,
+    workspace_id: UUID,
+    question: str,
+    history: list[dict[str, str]] | None = None,
+    embedding_provider: EmbeddingProvider | None = None,
+    llm_provider: LLMProvider | None = None,
+) -> dict[str, Any]:
+    """Answers a question against the read-only demo workspace without persisting conversations (Blueprint 5.4)."""
+    embed_provider = embedding_provider or GeminiEmbeddingProvider()
+    gen_provider = llm_provider or GeminiLLMProvider()
+
+    # 1. Condensation if history exists
+    standalone_query = question
+    if settings.CONDENSE_ENABLED and history:
+        recent_turns = [
+            {"role": t.get("role", "user"), "content": t.get("content", "")}
+            for t in history[-4:]
+            if t.get("content")
+        ]
+        if recent_turns:
+            condense_prompt = format_condense_prompt(recent_turns, question)
+            try:
+                condensed = await gen_provider.generate(
+                    CONDENSE_SYSTEM_PROMPT, condense_prompt
+                )
+                if condensed and len(condensed.strip()) > 3:
+                    standalone_query = condensed.strip()
+            except Exception as e:  # noqa: BLE001
+                logger.warning(f"Demo question condensation failed, using original: {e}")
+                standalone_query = question
+
+    # 2. Embed query
+    query_vector = await embed_provider.embed_query(standalone_query)
+
+    # 3. Retrieve chunks
+    retrieved_chunks = await match_workspace_chunks(
+        db=db,
+        workspace_id=workspace_id,
+        query_vector=query_vector,
+        k=settings.TOP_K,
+    )
+
+    # 4. Threshold gate
+    top_score = (
+        float(retrieved_chunks[0]["similarity"]) if retrieved_chunks else None
+    )
+    if not retrieved_chunks or (top_score is not None and top_score < settings.RETRIEVAL_MIN_SCORE):
+        return {
+            "answer": FALLBACK_NOT_FOUND,
+            "grounded": False,
+            "citations": [],
+        }
+
+    # 5. Format sources and call LLM
+    user_prompt = format_user_prompt(standalone_query, retrieved_chunks)
+    raw_response = await gen_provider.generate(
+        system_prompt=SYSTEM_PROMPT,
+        user_prompt=user_prompt,
+        response_schema=ANSWER_JSON_SCHEMA,
+    )
+
+    parsed = parse_llm_json(raw_response)
+    if parsed is None:
+        raw_response = await gen_provider.generate(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+            response_schema=ANSWER_JSON_SCHEMA,
+        )
+        parsed = parse_llm_json(raw_response)
+
+    if parsed and parsed.get("answerable") is True:
+        raw_answer = strip_html(parsed.get("answer", ""))
+        used_indices = parsed.get("used_sources", [])
+        citations, is_grounded = build_citations(used_indices, retrieved_chunks)
+        if is_grounded:
+            return {
+                "answer": raw_answer,
+                "grounded": True,
+                "citations": citations,
+            }
+
+    return {
+        "answer": FALLBACK_NOT_FOUND,
+        "grounded": False,
+        "citations": [],
+    }
+

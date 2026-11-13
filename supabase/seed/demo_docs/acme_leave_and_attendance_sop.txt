@@ -1,0 +1,30 @@
+ACME CORP EMPLOYEE HANDBOOK: LEAVE AND ATTENDANCE POLICY
+Document Code: SOP-HR-101
+Version: 3.2 | Effective Date: January 1, 2026
+Applicability: All Full-Time and Regular Part-Time Employees
+
+1. Paid Time Off (PTO) Policy
+Acme Corp provides generous Paid Time Off to support work-life balance and personal wellness.
+- Full-time regular employees accrue 20 days of Paid Time Off per calendar year, accrued at the rate of 1.67 days per full month of active service.
+- Part-time employees scheduled for 20 or more hours per week accrue PTO on a prorated basis.
+- Up to a maximum of 5 unused PTO days may be rolled over into the consecutive calendar year. Any additional accrued but unused PTO beyond 5 days will expire on December 31 at midnight without financial compensation or cash-out.
+- For planned PTO exceeding three (3) consecutive working days, employees must submit a formal request via the Workday portal at least two (2) weeks in advance for manager approval.
+- For single-day or emergency PTO requests, notice should be provided to the immediate manager as soon as practicable, ideally prior to the start of the scheduled shift.
+
+2. Sick Leave and Medical Absences
+- All full-time employees are allocated 10 dedicated paid sick days on January 1 of each calendar year. Sick leave does not accrue monthly and cannot be carried over from year to year.
+- Sick leave covers illness, injury, preventive medical appointments, or caring for an immediate ill family member.
+- If an employee is absent due to illness for more than three (3) consecutive business days, they must provide a certified medical practitioner's note to People Operations (hr@acme.example) within forty-eight (48) hours of returning to work.
+- Failure to submit required medical documentation may result in the unpaid reclassification of the absence.
+
+3. Parental and Caregiver Leave
+Acme Corp is committed to supporting expanding families:
+- Primary Caregivers: Employees designated as primary caregivers are entitled to sixteen (16) weeks of fully paid parental leave (100% regular base salary) following the birth, adoption, or foster placement of a child.
+- Secondary Caregivers: Eligible employees designated as secondary caregivers receive six (6) weeks of fully paid parental leave.
+- Parental leave must be commenced within twelve (12) months following the date of birth or formal placement. Leave may be taken continuously or in two separate blocks with prior HR coordination.
+- Health insurance benefits, equity vesting, and retirement contributions continue uninterrupted throughout the duration of paid parental leave.
+
+4. Bereavement Leave
+- Immediate Family: Employees may take up to five (5) consecutive paid business days for bereavement upon the loss of an immediate family member (defined as a spouse, domestic partner, child, parent, legal guardian, or sibling).
+- Extended Family: Up to three (3) consecutive paid business days are provided for the death of an extended family member (grandparent, grandchild, aunt, uncle, niece, nephew, or parent-in-law).
+- Employees must complete and submit Bereavement Request Form HR-402 in the Acme HR Portal within five (5) business days following their return to duties.

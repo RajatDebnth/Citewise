@@ -189,3 +189,16 @@ def require_member(min_role: str = "member"):
         )
 
     return _require_member
+
+
+async def require_admin(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+) -> AuthenticatedUser:
+    """Dependency that ensures caller has is_admin=True."""
+    if not user.is_admin:
+        raise ForbiddenException(
+            code="admin_required",
+            message="Administrator privileges required for this action",
+        )
+    return user
+

@@ -1,0 +1,23 @@
+ACME CORP INFORMATION SECURITY AND DEVICE MANAGEMENT STANDARDS
+Document Code: SEC-SOP-302
+Version: 5.0 | Effective Date: March 1, 2026
+Applicability: All Personnel Accessing Acme Corp Information Systems
+
+1. Identity Verification and Password Standards
+- Password Complexity: Passwords for Acme single-sign-on (SSO) and corporate accounts must contain a minimum of sixteen (16) characters. Passwords must incorporate at least one uppercase letter, one lowercase letter, one numeric digit, and one non-alphanumeric special symbol (!, @, #, $, %, ^, &, *).
+- Rotation Interval: Passwords must be updated every ninety (90) calendar days. The identity management system automatically prohibits reuse of the previous ten (10) passwords.
+- Multi-Factor Authentication (MFA): MFA is strictly enforced across all cloud services, VPN connections, and internal application endpoints. Approved factors include FIDO2 hardware security keys (e.g., YubiKey) and verified mobile authenticator applications (Google Authenticator, Okta Verify). SMS-based or voice-call two-factor authentication is strictly deprecated and prohibited due to SIM-swapping vulnerabilities.
+
+2. Workstation Security and Screen Lock Policy
+- Endpoint Encryption: All company-assigned laptops (macOS and Windows) must operate with full disk encryption enabled (FileVault 2 for macOS, BitLocker with TPM for Windows). Disabling encryption triggers an automated device isolation flag from Acme endpoint protection.
+- Inactivity Screen Lock: Workstations must be configured to automatically lock their screens after an idle timeout of five (5) minutes. 
+- Clean Desk and Physical Security: Whenever an employee steps away from their desk, workstation, or workspace—regardless of duration—they must immediately invoke a manual screen lock (Cmd+Ctrl+Q on macOS, Win+L on Windows). Sensitive printouts, badges, and hardware keys must never be left unattended in public or open-office environments.
+
+3. Incident Response: Lost or Stolen Equipment
+- Immediate Notification: In the event of a lost, misplaced, or stolen Acme device (laptop, smartphone, tablet, or physical security key), the custodian must notify the Information Security Operations Center immediately and within a maximum of two (2) hours from discovery.
+- Reporting Channel: Incidents must be reported by sending an urgent message to security@acme.example or calling the Acme Global Incident Hotline at +1-800-555-ACME.
+- Required Details: The report must include the device asset tag number or serial number, the approximate time and geographic location of the loss, and the local police report case number (if theft occurred). Information Security will initiate an immediate remote cryptographic wipe.
+
+4. Approved Software and Cloud Storage
+- Prohibited Storage Platforms: Corporate data, engineering codebases, customer contracts, and confidential financial reports must never be stored on personal cloud storage platforms (such as personal Google Drive, Dropbox, iCloud, or OneDrive).
+- Software Installation: Employees are barred from installing unapproved third-party desktop applications, browser plugins with data-scraping permissions, or unlicensed tools. Requests for new development tools or AI services must undergo formal security review via the IT Service Portal.

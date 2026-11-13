@@ -141,3 +141,51 @@ export interface UnansweredItem {
   created_at: string;
 }
 
+// ---------------------------------------------------------------------------
+// Demo & Admin Types
+// ---------------------------------------------------------------------------
+
+export interface DemoDocument {
+  id: string;
+  filename: string;
+  page_count?: number | null;
+  chunk_count: number;
+}
+
+export interface DemoChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  citations?: CitationItem[];
+  grounded?: boolean;
+}
+
+export interface DemoChatResponse {
+  answer: string;
+  grounded: boolean;
+  citations: CitationItem[];
+}
+
+export interface AdminUsage {
+  db_size_bytes: number;
+  total_workspaces: number;
+  total_documents: number;
+  total_chunks: number;
+  active_users_7d: number;
+  gemini_calls_today: {
+    embed_calls: number;
+    llm_calls: number;
+    total: number;
+    daily_budget: number;
+    questions: number;
+    demo_questions: number;
+  };
+  settings: Record<string, any>;
+}
+
+export interface AdminSettingsUpdate {
+  uploads_enabled?: boolean;
+  chat_enabled?: boolean;
+  global_max_chunks?: number;
+}
+
+

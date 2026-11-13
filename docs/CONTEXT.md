@@ -313,7 +313,37 @@
 - **Verification:**
   - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
   - `npm run build`: Succeeded cleanly (`tsc && vite build` 0 errors).
-- **Next Step:** Ready for Phase 9: Demo Workspace, Operational Readiness, and Polish.
+## 2026-11-13 - Phase 9: Public Demo, Admin, Operational Readiness, and Polish
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Public Demo Endpoints (`backend/app/api/v1/demo.py`):
+    - `GET /api/v1/demo/documents`: Public listing of ready documents in the synthetic `is_demo` workspace.
+    - `POST /api/v1/demo/chat`: Public unauthenticated chat endpoint targeting the `is_demo` workspace. Enforces 3/min burst limit (slowapi), 15 questions/day per IP hash (`DEMO_QUESTIONS_PER_IP_DAY`), global Gemini daily call budget check (`GEMINI_DAILY_CALL_BUDGET`), and short-TTL (300s) answer cache. Conversations and messages are strictly not persisted to the database.
+    - `get_daily_ip_hash`: Hashes client IP (`CF-Connecting-IP`, trusted `X-Forwarded-For`, or client host) with date and server secret using SHA-256 (S16, S20).
+  - Admin Endpoints (`backend/app/api/v1/admin.py`):
+    - Secured by `require_admin` dependency asserting `profiles.is_admin = True`.
+    - `GET /api/v1/admin/usage`: Returns live counts of workspaces, documents, chunks, active users in 7 days, database size estimates, and today's Gemini API consumption breakdown (embed calls, LLM calls, daily budget).
+    - `PATCH /api/v1/admin/settings`: Allows dynamic toggling of global killswitches (`uploads_enabled`, `chat_enabled`, `global_max_chunks`) in the `app_settings` table.
+  - Synthetic Demo Corpus & Seeding Script:
+    - Added synthetic SOP documents under `supabase/seed/demo_docs/`:
+      - `acme_leave_and_attendance_sop.txt` (PTO, sick leave, parental leave, bereavement SOP-HR-101)
+      - `acme_travel_and_expenses_policy.txt` (Travel booking, lodging caps, per diem, receipts FIN-SOP-204)
+      - `acme_it_security_and_devices_policy.txt` (Password rules, MFA, 5-min screen lock, incident reporting SEC-SOP-302)
+    - Implemented `scripts/seed_demo.py`: Connects to database, creates the dedicated demo workspace (`is_demo=true`), uploads files to Supabase Storage, and runs them through the worker ingestion pipeline with 768-dim Gemini embeddings and chunking.
+  - Frontend Demo & Landing Experience:
+    - `frontend/src/pages/LandingPage.tsx`: Full product landing page showcasing Grounded RAG architecture, zero-hallucination threshold gating, verifiable citations, multi-tenant security, and interactive CTA buttons.
+    - `frontend/src/pages/DemoPage.tsx`: Interactive public demo interface with synthetic SOP pills, one-click sample prompt chips, chat stream with ReactMarkdown, inline citation chips `[n]` opening a rich Citation Side Panel drawer, and graceful 429 quota exhaustion handling.
+    - `frontend/src/types/index.ts` & `frontend/src/services/api.ts`: Added `demoApi` and `adminApi` typed service clients.
+  - Operational Documentation & Infrastructure:
+    - `docs/RUNBOOK.md`: Comprehensive recovery runbook covering paused Supabase database, monthly `pg_dump` backups, storage threshold killswitches, Gemini quota adjustments, stuck worker recovery, key rotations, and portable hosting fallbacks.
+    - `docs/PRIVACY.md`: Complete data policy detailing differences between Gemini Free vs Paid tiers, mandatory confidentiality acknowledgments, storage encryption, IP hashing, and cascading data deletion.
+    - `README.md`: Complete documentation with Mermaid architecture diagram, core capabilities, limitations & free-tier notes, technology stack, setup guide, and API table.
+- **Verification:**
+  - `seed_demo.py`: Successfully created demo workspace and ingested all 3 demo SOP documents with vectors into pgvector.
+  - `ruff check backend/app scripts backend/tests`: Passed cleanly with 0 errors.
+  - `npm run build`: Succeeded cleanly with 0 errors (`tsc && vite build`).
+- **Next Step:** All 9 Core Blueprint Phases Complete! Ready for final project review or Phase 10 (P2 enhancements if requested).
+
 
 
 

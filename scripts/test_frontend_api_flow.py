@@ -8,8 +8,9 @@ Live End-to-End smoke test:
 import asyncio
 import os
 import uuid
-import httpx
 from pathlib import Path
+
+import httpx
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parent.parent

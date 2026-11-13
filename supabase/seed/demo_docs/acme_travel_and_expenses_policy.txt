@@ -1,0 +1,24 @@
+ACME CORP GLOBAL TRAVEL & EXPENSE REIMBURSEMENT POLICY
+Document Code: FIN-SOP-204
+Version: 4.1 | Effective Date: February 15, 2026
+Applicability: Global Workforce Traveling on Approved Business
+
+1. Travel Authorization and Flight Bookings
+- Approved Booking Platform: All business flights, lodging, and vehicle rentals must be booked exclusively through the Acme Corporate Travel Portal (Navan). Off-platform bookings made directly with airlines or third-party travel websites will not be reimbursed without prior written exception from the Chief Financial Officer.
+- Advance Booking Requirement: Travel must be booked at least fourteen (14) calendar days in advance of departure whenever feasible to secure preferred corporate pricing.
+- Flight Cost Approval Gate: Any domestic or international flight reservation exceeding $500 USD total cost requires explicit written pre-approval from the Department Vice President before ticket issuance.
+- Cabin Class Standards: Economy / Coach class is required for all domestic flights within North America and for international routes with continuous scheduled flying time under six (6) hours. Business class accommodations are permitted solely for direct international itineraries exceeding six (6) continuous flight hours, provided prior VP approval has been obtained. Premium economy may be booked for flights between five (5) and six (6) hours.
+
+2. Hotel Lodging and Ground Transportation
+- Nightly Rate Caps: Lodging reimbursement is capped at $250 USD per night (exclusive of mandatory municipal lodging taxes and resort fees) for Standard Tier cities. For High-Cost Metropolitan Tier cities (San Francisco, New York City, London, Tokyo, Singapore, Zurich, and Paris), the allowable nightly cap is elevated to $350 USD per night.
+- Incidental Expenses: Personal minibar charges, movie rentals, laundry services for stays under five (5) days, and spa treatments are non-reimbursable personal expenditures.
+- Ground Transport: Employees are encouraged to use public transit, regional trains, airport shuttles, or rideshare services (Uber/Lyft standard tier). Rental cars are permitted only when local rideshare is economically disadvantageous or infeasible.
+
+3. Meal Per Diems and Business Dining
+- Daily Meal Allowance: Full-time employees on business travel are eligible for an individual meal per diem limit of $75 USD per day ($15 Breakfast, $25 Lunch, $35 Dinner). Unused meal amounts from one meal cannot be transferred to another day.
+- Alcohol Policy: Alcohol purchased for individual meals is considered a personal expense and cannot be expensed to company accounts.
+- Business Entertainment Dining: When hosting clients, prospective customers, or external partners for dinner, expenses are reimbursable up to $100 USD per attendee with prior management approval. The expense claim must itemize the full legal names of all participants, their companies, and the legitimate commercial business purpose discussed.
+
+4. Expense Report Submission and Audit Requirements
+- Submission Timeline: All travel expense claims, along with supporting documentation, must be compiled and submitted via Expensify within thirty (30) calendar days of trip completion. Expense reports submitted past sixty (60) days from the expenditure date are deemed forfeit under standard corporate accounting policy.
+- Receipt Substantiation: Legible itemized receipts showing date, vendor name, items purchased, and payment method are mandatory for every individual expenditure equal to or exceeding $25 USD. Credit card statement summaries or charge slips omitting itemized breakdowns are insufficient.

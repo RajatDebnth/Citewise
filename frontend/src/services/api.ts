@@ -1,8 +1,12 @@
 import { supabase } from '../lib/supabase';
 import {
+  AdminSettingsUpdate,
+  AdminUsage,
   ChatResponse,
   ConversationDetail,
   ConversationSummary,
+  DemoChatResponse,
+  DemoDocument,
   DocumentDetail,
   DocumentDownloadResponse,
   DocumentSummary,
@@ -237,3 +241,20 @@ export const chatApi = {
 export const healthApi = {
   check: () => api.get<{ status: string }>('/health', { skipAuth: true, timeoutMs: 10_000 }),
 };
+
+// Demo endpoints (Blueprint 5.4)
+export const demoApi = {
+  getDocuments: () =>
+    api.get<DemoDocument[]>('/demo/documents', { skipAuth: true }),
+  sendChat: (payload: { question: string; history?: { role: string; content: string }[] }) =>
+    api.post<DemoChatResponse>('/demo/chat', payload, { skipAuth: true }),
+};
+
+// Admin endpoints (Blueprint 5.5)
+export const adminApi = {
+  getUsage: () =>
+    api.get<AdminUsage>('/admin/usage'),
+  updateSettings: (payload: AdminSettingsUpdate) =>
+    api.patch<Record<string, any>>('/admin/settings', payload),
+};
+
