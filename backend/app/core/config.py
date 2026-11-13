@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     APP_ENV: str = "production"
     LOG_LEVEL: str = "INFO"
-    CORS_ORIGINS: str | list[str] = "http://localhost:5173"
+    CORS_ORIGINS: str | list[str] = "http://localhost:5173,https://citewise-3ip.pages.dev,https://citewise.pages.dev"
 
     # Supabase
     SUPABASE_URL: str = ""
