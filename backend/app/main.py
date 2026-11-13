@@ -79,6 +79,38 @@ def create_app() -> FastAPI:
 
     app.state.limiter = limiter
 
+    # Body size limit middleware (S26: reject requests > 11 MB)
+    @app.middleware("http")
+    async def body_size_limit_middleware(request: Request, call_next) -> Response:
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                length_int = int(content_length)
+                max_bytes = 11 * 1024 * 1024  # 11 MB
+                if length_int > max_bytes:
+                    return JSONResponse(
+                        status_code=413,
+                        content={
+                            "error": {
+                                "code": "payload_too_large",
+                                "message": f"Request body exceeds maximum allowed size ({max_bytes // (1024 * 1024)} MB)",
+                            }
+                        },
+                    )
+            except ValueError:
+                pass
+        return await call_next(request)
+
+    # Security headers middleware (S25)
+    @app.middleware("http")
+    async def security_headers_middleware(request: Request, call_next) -> Response:
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+        return response
+
     # Request ID and timing middleware
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next) -> Response:
@@ -93,15 +125,19 @@ def create_app() -> FastAPI:
         response.headers["X-Process-Time"] = f"{process_time:.4f}s"
         return response
 
-    # CORS configuration
-    origins = (
+    # CORS configuration (S24: never allow "*" when allow_credentials=True)
+    raw_origins = (
         settings.CORS_ORIGINS
         if isinstance(settings.CORS_ORIGINS, list)
         else [settings.CORS_ORIGINS]
     )
+    safe_origins = [o for o in raw_origins if o and o != "*"]
+    if not safe_origins:
+        safe_origins = ["http://localhost:5173"]
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins if origins else ["*"],
+        allow_origins=safe_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

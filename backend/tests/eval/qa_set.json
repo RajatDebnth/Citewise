@@ -1,0 +1,227 @@
+[
+  {
+    "id": "q01",
+    "question": "What is the annual paid time off (PTO) accrual rate for full-time employees?",
+    "expected_doc": "employee_handbook.pdf",
+    "expected_page": 5,
+    "answerable": true
+  },
+  {
+    "id": "q02",
+    "question": "How many days of paid sick leave are provided each calendar year?",
+    "expected_doc": "employee_handbook.pdf",
+    "expected_page": 6,
+    "answerable": true
+  },
+  {
+    "id": "q03",
+    "question": "What is the company policy regarding carryover of unused vacation days into next year?",
+    "expected_doc": "employee_handbook.pdf",
+    "expected_page": 7,
+    "answerable": true
+  },
+  {
+    "id": "q04",
+    "question": "How does parental leave apply to primary caregivers and secondary caregivers?",
+    "expected_doc": "employee_handbook.pdf",
+    "expected_page": 9,
+    "answerable": true
+  },
+  {
+    "id": "q05",
+    "question": "What are the core working hours during which team members must be reachable?",
+    "expected_doc": "employee_handbook.pdf",
+    "expected_page": 12,
+    "answerable": true
+  },
+  {
+    "id": "q06",
+    "question": "What password complexity and minimum length are required by corporate IT?",
+    "expected_doc": "security_policy.pdf",
+    "expected_page": 2,
+    "answerable": true
+  },
+  {
+    "id": "q07",
+    "question": "Is multi-factor authentication (MFA) mandatory for accessing internal production clusters?",
+    "expected_doc": "security_policy.pdf",
+    "expected_page": 3,
+    "answerable": true
+  },
+  {
+    "id": "q08",
+    "question": "What is the procedure when a company laptop or mobile device is lost or stolen?",
+    "expected_doc": "security_policy.pdf",
+    "expected_page": 6,
+    "answerable": true
+  },
+  {
+    "id": "q09",
+    "question": "What is the maximum allowed screen-lock idle timeout for employee workstations?",
+    "expected_doc": "security_policy.pdf",
+    "expected_page": 8,
+    "answerable": true
+  },
+  {
+    "id": "q10",
+    "question": "How often must employees complete the mandatory security awareness training?",
+    "expected_doc": "security_policy.pdf",
+    "expected_page": 11,
+    "answerable": true
+  },
+  {
+    "id": "q11",
+    "question": "What is the protocol for declaring and responding to a Severity 1 production incident?",
+    "expected_doc": "engineering_sop.docx",
+    "expected_page": 1,
+    "answerable": true
+  },
+  {
+    "id": "q12",
+    "question": "Who acts as the Incident Commander during an active production outage?",
+    "expected_doc": "engineering_sop.docx",
+    "expected_page": 1,
+    "answerable": true
+  },
+  {
+    "id": "q13",
+    "question": "What are the peer review and automated testing requirements before merging code to master?",
+    "expected_doc": "engineering_sop.docx",
+    "expected_page": 2,
+    "answerable": true
+  },
+  {
+    "id": "q14",
+    "question": "What is the standard canary deployment and rollback procedure for backend microservices?",
+    "expected_doc": "engineering_sop.docx",
+    "expected_page": 3,
+    "answerable": true
+  },
+  {
+    "id": "q15",
+    "question": "How long is on-call shift rotation and what is the response SLA for P1 pages?",
+    "expected_doc": "engineering_sop.docx",
+    "expected_page": 4,
+    "answerable": true
+  },
+  {
+    "id": "q16",
+    "question": "What is the maximum daily meal allowance for domestic business travel?",
+    "expected_doc": "expense_policy.pdf",
+    "expected_page": 3,
+    "answerable": true
+  },
+  {
+    "id": "q17",
+    "question": "Within how many calendar days must travel expense reports be submitted after a trip?",
+    "expected_doc": "expense_policy.pdf",
+    "expected_page": 4,
+    "answerable": true
+  },
+  {
+    "id": "q18",
+    "question": "Are alcoholic beverages eligible for reimbursement during business dinners?",
+    "expected_doc": "expense_policy.pdf",
+    "expected_page": 5,
+    "answerable": true
+  },
+  {
+    "id": "q19",
+    "question": "What receipts are required for itemized expenses under fifty dollars?",
+    "expected_doc": "expense_policy.pdf",
+    "expected_page": 6,
+    "answerable": true
+  },
+  {
+    "id": "q20",
+    "question": "Who must approve business expenses exceeding two thousand five hundred dollars?",
+    "expected_doc": "expense_policy.pdf",
+    "expected_page": 8,
+    "answerable": true
+  },
+  {
+    "id": "q21",
+    "question": "What is the one-time home office equipment stipend provided for remote workers?",
+    "expected_doc": "remote_work_agreement.docx",
+    "expected_page": 1,
+    "answerable": true
+  },
+  {
+    "id": "q22",
+    "question": "What internet speed and bandwidth requirements must home offices maintain?",
+    "expected_doc": "remote_work_agreement.docx",
+    "expected_page": 2,
+    "answerable": true
+  },
+  {
+    "id": "q23",
+    "question": "What is the monthly stipend provided to offset remote home internet expenses?",
+    "expected_doc": "remote_work_agreement.docx",
+    "expected_page": 2,
+    "answerable": true
+  },
+  {
+    "id": "q24",
+    "question": "What medical and dental insurance carriers are provided under the group healthcare plan?",
+    "expected_doc": "benefits_summary.txt",
+    "expected_page": 1,
+    "answerable": true
+  },
+  {
+    "id": "q25",
+    "question": "What is the employer 401k matching percentage and vesting schedule?",
+    "expected_doc": "benefits_summary.txt",
+    "expected_page": 1,
+    "answerable": true
+  },
+  {
+    "id": "q26",
+    "question": "What is the company stock option strike price in the latest Series C round?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q27",
+    "question": "What is the personal phone number and home address of the CEO?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q28",
+    "question": "How do I bake sourdough bread from scratch?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q29",
+    "question": "What are the secret cryptographic private keys used by Stripe payments?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q30",
+    "question": "What was the closing price of Microsoft stock on December 1st 2024?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q31",
+    "question": "What is the recipe for chocolate chip cookies in the company cafeteria?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  },
+  {
+    "id": "q32",
+    "question": "How do I perform a brake fluid replacement on a 2018 Honda Civic?",
+    "expected_doc": null,
+    "expected_page": null,
+    "answerable": false
+  }
+]
+

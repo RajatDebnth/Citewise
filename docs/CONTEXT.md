@@ -290,7 +290,31 @@
   - `npm run build` in `frontend`: Succeeded with 0 errors (`tsc && vite build` clean).
   - `ruff check backend/app backend/tests`: Passed (0 errors).
   - Full end-to-end flow verified against backend routes.
-- **Next Step:** Ready for Phase 8: Hardening and evaluation (cross-tenant security matrix, forged JWT suite, upload attack fixtures, slowapi limits, security headers, eval script with `qa_set.json` template).
+- **Next Step:** Completed. Ready for Phase 8.
+
+## 2026-11-13 - Phase 8: Hardening and Evaluation
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Security Middleware in `backend/app/main.py`:
+    - `body_size_limit_middleware`: Enforces strict 11 MB maximum request body size limit, immediately returning HTTP 413 `payload_too_large` before buffering in memory.
+    - `security_headers_middleware`: Injects standard security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and restrictive `Permissions-Policy`).
+    - Tightened CORS middleware: Explicit allowed methods, allowed headers, and no wildcard credentials.
+  - Frontend Security Headers:
+    - Added `frontend/public/_headers` for Cloudflare Pages production deployments with strict Content Security Policy (`default-src 'self'`, `connect-src 'self' ...`, `frame-ancestors 'none'`), HSTS, and referrer policy.
+  - CI Secret Scanning:
+    - Updated `.github/workflows/ci.yml` with `security-scan` job executing `gitleaks` on pull requests and pushes to detect leaked keys or tokens.
+  - Evaluation Benchmark:
+    - Added `backend/tests/eval/qa_set.json` containing 32 synthetic QA items (24 answerable spanning various topics, 8 unanswerable out-of-domain queries).
+    - Added evaluation script `backend/tests/eval/run_eval.py` that computes retrieval `hit@5`, `refusal_accuracy` on unanswerable queries, and `median_latency_ms`.
+  - Security Test Suites:
+    - `backend/tests/test_cross_tenant_matrix.py`: Verifies zero existence leakage (404) for unauthorized users across all workspace, document, chat, conversation, feedback, and unanswered endpoints.
+    - `backend/tests/test_auth_security.py`: Tests rejected authorization attacks including forged JWT signatures, expired tokens, invalid audiences, non-UUID `sub`, and anonymous role tokens.
+    - `backend/tests/test_upload_attacks.py`: Tests upload attack fixtures including 11 MB body size limits, path traversal filename sanitization, and streaming validation.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - `npm run build`: Succeeded cleanly (`tsc && vite build` 0 errors).
+- **Next Step:** Ready for Phase 9: Demo Workspace, Operational Readiness, and Polish.
+
 
 
 
