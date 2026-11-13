@@ -6,6 +6,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.v1.health import router as health_router
@@ -17,9 +19,22 @@ from app.core.errors import (
     unhandled_exception_handler,
     validation_exception_handler,
 )
+from app.core.limits import limiter
 from app.core.logging import get_logger, request_id_ctx_var, setup_logging
 
 logger = get_logger("app.main")
+
+
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Too many requests. Please slow down.",
+            }
+        },
+    )
 
 
 @asynccontextmanager
@@ -40,6 +55,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.state.limiter = limiter
+
     # Request ID and timing middleware
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next) -> Response:
@@ -55,7 +72,11 @@ def create_app() -> FastAPI:
         return response
 
     # CORS configuration
-    origins = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+    origins = (
+        settings.CORS_ORIGINS
+        if isinstance(settings.CORS_ORIGINS, list)
+        else [settings.CORS_ORIGINS]
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins if origins else ["*"],
@@ -68,6 +89,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(AppException, app_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)
 
     # API Routers
@@ -77,4 +99,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

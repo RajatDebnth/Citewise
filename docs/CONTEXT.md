@@ -26,6 +26,24 @@
   - `pytest backend/tests`: Passed (2 passed in 1.00s).
   - `uvicorn app.main:app` test on port 8000: `GET /api/v1/health` returned `{"status": "ok"}`.
   - `npm run build` in `frontend`: Passed (`tsc` clean and Vite build output to `dist/`).
-- **Next Step:** Phase 1: Database and Supabase wiring (`supabase/migrations/0001_init.sql`, `core/db.py`, `/api/v1/health/deep`, and `scripts/check_db.py`).
+- **Next Step:** Completed. Ready for Phase 1.
+
+## 2026-11-13 - Phase 1: Database and Supabase Wiring
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Implemented exact database schema in `supabase/migrations/0001_init.sql` (13 tables, extensions `vector` & `pgcrypto`, enums, RLS policies on all tables, `match_chunks` function with 768-dim query vector, and `claim_document_job` for atomic queue claiming).
+  - Created `backend/app/core/db.py` with SQLAlchemy async engine, `DB_POOL_MAX` (pool size 5, max_overflow 0), asyncpg `statement_cache_size=0`, `prepared_statement_cache_size=0`, and pgvector registration on connections.
+  - Implemented `backend/app/core/limits.py` for slowapi rate limiting.
+  - Added `GET /api/v1/health/deep` in `backend/app/api/v1/health.py`, verifying both live PostgreSQL connection (`SELECT 1`) and Supabase Storage bucket (`documents`).
+  - Created `scripts/apply_migration.py` and applied `0001_init.sql` directly to the Supabase instance.
+  - Created `scripts/check_db.py` verifying extensions, all 13 tables, RLS enabled on all tables, seed settings, and `match_chunks` & `claim_document_job` execution.
+  - Added `docker-compose.yml` for local `pgvector/pgvector` database container.
+  - Added migration fixture and test session fixtures in `backend/tests/conftest.py`.
+- **Tests & Verification:**
+  - `python scripts/check_db.py`: All 5 check categories passed (`>>> ALL DATABASE CHECKS PASSED SUCCESSFULLY! <<<`).
+  - `pytest backend/tests`: 3 passed in 9.04s (`test_health_check`, `test_deep_health_check`, `test_not_found_standard_error_shape`).
+  - Live server test against `GET /api/v1/health/deep` returned `{"status": "ok", "db": "ok", "storage": "ok"}`.
+  - `ruff check backend/app backend/tests scripts`: Passed with 0 errors.
+- **Next Step:** Phase 2: Auth and workspaces (`core/security.py`, verify Supabase JWTs via JWKS, `current_user`, `require_member`, workspace endpoints, and cross-tenant tests).
 
 
