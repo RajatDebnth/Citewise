@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     # Gemini
     GEMINI_API_KEY: str = ""
-    GEN_MODEL: str = "gemini-2.5-flash"
+    GEN_MODEL: str = "gemini-3.5-flash-lite"
     EMBED_MODEL: str = "gemini-embedding-001"
     EMBED_DIM: int = 768
     EMBED_BATCH: int = 50
