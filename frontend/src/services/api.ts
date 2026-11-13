@@ -1,9 +1,15 @@
 import { supabase } from '../lib/supabase';
 import {
+  ChatResponse,
+  ConversationDetail,
+  ConversationSummary,
   DocumentDetail,
   DocumentDownloadResponse,
   DocumentSummary,
   DocumentUploadResponse,
+  FeedbackPayload,
+  SendChatRequest,
+  UnansweredItem,
   UserMeResponse,
   WorkspaceDetail,
   WorkspaceSummary,
@@ -205,6 +211,26 @@ export const documentsApi = {
     ),
   delete: (wid: string, did: string) =>
     api.delete<void>(`/workspaces/${wid}/documents/${did}`),
+};
+
+// Chat and RAG endpoints
+export const chatApi = {
+  sendMessage: (wid: string, payload: SendChatRequest) =>
+    api.post<ChatResponse>(`/workspaces/${wid}/chat`, payload),
+  listConversations: (wid: string) =>
+    api.get<ConversationSummary[]>(`/workspaces/${wid}/conversations`),
+  getConversation: (wid: string, cid: string) =>
+    api.get<ConversationDetail>(`/workspaces/${wid}/conversations/${cid}`),
+  renameConversation: (wid: string, cid: string, title: string) =>
+    api.patch<ConversationSummary>(`/workspaces/${wid}/conversations/${cid}`, { title }),
+  deleteConversation: (wid: string, cid: string) =>
+    api.delete<void>(`/workspaces/${wid}/conversations/${cid}`),
+  sendFeedback: (mid: string, payload: FeedbackPayload) =>
+    api.post<{ status: string; message_id: string; rating: number }>(`/messages/${mid}/feedback`, payload),
+  listUnanswered: (wid: string) =>
+    api.get<UnansweredItem[]>(`/workspaces/${wid}/unanswered`),
+  updateUnansweredStatus: (wid: string, uid: string, status: 'open' | 'resolved' | 'ignored') =>
+    api.patch<UnansweredItem>(`/workspaces/${wid}/unanswered/${uid}`, { status }),
 };
 
 // Health endpoints

@@ -248,7 +248,50 @@
   - All 6 chat tests passed.
   - `ruff check backend/app backend/tests`: Passed (0 errors).
   - `npm run build` in `frontend`: Passed (0 errors).
-- **Next Step:** Ready for Phase 7: Chat Frontend (`ChatPage.tsx`, conversation list, message view with safe markdown, inline citation chips `[n]` opening citation side panel, 👍/👎 feedback buttons, ungrounded / not-found state, and unanswered questions page).
+- **Next Step:** Completed. Ready for Phase 7.
+
+## 2026-11-13 - Phase 7: Chat Frontend
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Extended TypeScript schemas (`frontend/src/types/index.ts`):
+    - Added `CitationItem`, `ChatMessage`, `ConversationSummary`, `ConversationDetail`, `ChatResponse`, `SendChatRequest`, `FeedbackPayload`, and `UnansweredItem`.
+  - Added API wrapper client methods in `frontend/src/services/api.ts` under `chatApi`:
+    - `sendMessage(wid, payload)`
+    - `listConversations(wid)`
+    - `getConversation(wid, cid)`
+    - `renameConversation(wid, cid, title)`
+    - `deleteConversation(wid, cid)`
+    - `sendFeedback(mid, payload)`
+    - `listUnanswered(wid)`
+    - `updateUnansweredStatus(wid, uid, status)`
+  - Implemented Chat Interface in `frontend/src/pages/ChatPage.tsx`:
+    - **Conversations Sidebar**: Lists workspace conversation threads, active thread highlighting, "New Chat" button, rename modal, and delete confirmation modal.
+    - **Message Stream**:
+      - Separate styles and avatars for User (`User` icon) and Assistant (`Bot` icon).
+      - Safe markdown rendering with `react-markdown`.
+      - Interactive citation chips `[n]` linking to cited document sources.
+      - Prominent ungrounded / not-found banner for queries where `grounded=false`, linking directly to the unanswered questions log.
+      - In-line 👍 and 👎 feedback buttons calling `POST /messages/{mid}/feedback`.
+      - Typing and document search loading indicator.
+      - Auto-scroll to latest message.
+    - **Citation Side Panel (Slide-out Drawer)**:
+      - Appears when any citation chip is clicked.
+      - Displays source number `[n]`, document title, page numbers, section title, similarity match percentage, and raw text excerpt.
+      - Direct shortcut link to view document in the workspace documents tab.
+    - **Chat Input Bar**:
+      - Multiline question textarea (Enter sends, Shift+Enter new line) with character counter (max 2000 chars).
+      - Graceful error banner handling 429 quota exhaustion ("Daily question quota exceeded. Please try again tomorrow.") and 503 maintenance status.
+  - Implemented Unanswered Questions Management in `frontend/src/pages/UnansweredPage.tsx`:
+    - Filter tabs: `All`, `Open`, `Resolved`, `Ignored` with live counters.
+    - Real-time text search across unanswered questions.
+    - Action buttons to update status (`Resolve`, `Ignore`, `Reopen`) via `PATCH /workspaces/{wid}/unanswered/{uid}`.
+    - Empty states and loading indicators.
+- **Tests & Verification:**
+  - `npm run build` in `frontend`: Succeeded with 0 errors (`tsc && vite build` clean).
+  - `ruff check backend/app backend/tests`: Passed (0 errors).
+  - Full end-to-end flow verified against backend routes.
+- **Next Step:** Ready for Phase 8: Hardening and evaluation (cross-tenant security matrix, forged JWT suite, upload attack fixtures, slowapi limits, security headers, eval script with `qa_set.json` template).
+
 
 
 

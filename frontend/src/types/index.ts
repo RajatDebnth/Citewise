@@ -76,3 +76,68 @@ export interface DocumentDownloadResponse {
   download_url: string;
   expires_in: number;
 }
+
+// ---------------------------------------------------------------------------
+// Chat & RAG Types
+// ---------------------------------------------------------------------------
+
+export interface CitationItem {
+  n: number;
+  chunk_id: string;
+  document_id: string;
+  filename: string;
+  page_start?: number | null;
+  page_end?: number | null;
+  section_title?: string | null;
+  score: number;
+  snippet: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  grounded?: boolean | null;
+  citations?: CitationItem[];
+  created_at: string;
+}
+
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationDetail extends ConversationSummary {
+  messages: ChatMessage[];
+}
+
+export interface ChatResponse {
+  conversation_id: string;
+  message_id: string;
+  answer: string;
+  grounded: boolean;
+  citations: CitationItem[];
+}
+
+export interface SendChatRequest {
+  conversation_id?: string;
+  question: string;
+  document_ids?: string[];
+}
+
+export interface FeedbackPayload {
+  rating: 1 | -1;
+  comment?: string;
+}
+
+export interface UnansweredItem {
+  id: string;
+  question: string;
+  top_score?: number | null;
+  status: 'open' | 'resolved' | 'ignored';
+  message_id?: string | null;
+  created_at: string;
+}
+
