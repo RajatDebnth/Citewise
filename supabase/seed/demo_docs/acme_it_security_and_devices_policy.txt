@@ -21,3 +21,4 @@ Applicability: All Personnel Accessing Acme Corp Information Systems
 4. Approved Software and Cloud Storage
 - Prohibited Storage Platforms: Corporate data, engineering codebases, customer contracts, and confidential financial reports must never be stored on personal cloud storage platforms (such as personal Google Drive, Dropbox, iCloud, or OneDrive).
 - Software Installation: Employees are barred from installing unapproved third-party desktop applications, browser plugins with data-scraping permissions, or unlicensed tools. Requests for new development tools or AI services must undergo formal security review via the IT Service Portal.
+

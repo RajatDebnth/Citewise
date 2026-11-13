@@ -22,3 +22,4 @@ Applicability: Global Workforce Traveling on Approved Business
 4. Expense Report Submission and Audit Requirements
 - Submission Timeline: All travel expense claims, along with supporting documentation, must be compiled and submitted via Expensify within thirty (30) calendar days of trip completion. Expense reports submitted past sixty (60) days from the expenditure date are deemed forfeit under standard corporate accounting policy.
 - Receipt Substantiation: Legible itemized receipts showing date, vendor name, items purchased, and payment method are mandatory for every individual expenditure equal to or exceeding $25 USD. Credit card statement summaries or charge slips omitting itemized breakdowns are insufficient.
+
