@@ -3,10 +3,9 @@ from collections.abc import AsyncGenerator
 
 import pytest
 import pytest_asyncio
+from app.core.config import settings
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.core.config import settings
 
 # Force test environment so NullPool is used across async test loops
 settings.APP_ENV = "test"

@@ -6,13 +6,12 @@ from datetime import UTC, datetime, timedelta
 import fitz
 import jwt
 import pytest
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy import text
-
 from app.core.config import settings
 from app.core.db import engine
 from app.core.storage import storage_service
 from app.main import app
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 
 TEST_JWT_SECRET = "super-secret-test-key-must-be-long-enough-32-chars"
 

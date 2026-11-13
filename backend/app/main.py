@@ -24,6 +24,8 @@ from app.core.errors import (
 )
 from app.core.limits import limiter
 from app.core.logging import get_logger, request_id_ctx_var, setup_logging
+from app.services.ingestion.worker import worker
+from app.services.providers.gemini import verify_embedding_dimension
 
 logger = get_logger("app.main")
 
@@ -47,8 +49,24 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         f"Starting application in {settings.APP_ENV} mode",
         extra={"env": settings.APP_ENV},
     )
+
+    # Startup self-check: verify embedding length equals EMBED_DIM
+    if settings.GEMINI_API_KEY and settings.APP_ENV != "test":
+        try:
+            await verify_embedding_dimension(worker._provider)
+        except Exception as e:
+            logger.error(f"Startup embedding verification failed: {e}")
+            raise
+
+    # Start background ingestion worker (in non-test modes)
+    if settings.APP_ENV != "test":
+        worker.start()
+
     yield
+
     logger.info("Shutting down application")
+    if settings.APP_ENV != "test":
+        await worker.stop()
 
 
 def create_app() -> FastAPI:

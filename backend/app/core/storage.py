@@ -49,6 +49,26 @@ class SupabaseStorageService:
                 )
             return resp.json() if resp.content else {}
 
+    async def download_file(self, storage_path: str) -> bytes:
+        """Downloads a file object from the storage bucket."""
+        url = f"{self.base_url}/object/authenticated/{self.bucket}/{storage_path}"
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.get(url, headers=self.headers)
+            if resp.status_code != 200:
+                # Fallback to standard object endpoint
+                fallback_url = f"{self.base_url}/object/{self.bucket}/{storage_path}"
+                resp = await client.get(fallback_url, headers=self.headers)
+            if resp.status_code != 200:
+                logger.error(
+                    f"Storage download failed ({resp.status_code}): {resp.text}"
+                )
+                raise AppException(
+                    status_code=500,
+                    code="storage_error",
+                    message="Failed to retrieve document from storage",
+                )
+            return resp.content
+
     async def delete_file(self, storage_path: str) -> bool:
         """Deletes a file object from the storage bucket."""
         url = f"{self.base_url}/object/{self.bucket}/{storage_path}"

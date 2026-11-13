@@ -3,11 +3,10 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import settings
 from app.core.errors import AppException
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def check_uploads_enabled(db: AsyncSession) -> None:
@@ -77,7 +76,6 @@ async def check_and_record_upload_quota(
 
 async def create_document(
     db: AsyncSession,
-    document_id: UUID,
     workspace_id: UUID,
     user_id: UUID,
     filename: str,
@@ -86,6 +84,7 @@ async def create_document(
     size_bytes: int,
     sha256: str,
     page_count: int | None,
+    document_id: UUID | None = None,
 ) -> dict[str, Any]:
     """Creates a document record with status 'pending' (S13, S15).
     
@@ -106,6 +105,7 @@ async def create_document(
             message=f"A document with identical content already exists in this workspace ('{dup['filename']}').",
         )
 
+    did = document_id or UUID(int=0)
     insert_query = text(
         """
         INSERT INTO documents (
@@ -113,7 +113,8 @@ async def create_document(
             size_bytes, sha256, page_count, status
         )
         VALUES (
-            :did, :wid, :filename, :storage_path, :mime_type,
+            COALESCE(NULLIF(:did, '00000000-0000-0000-0000-000000000000'::uuid), gen_random_uuid()),
+            :wid, :filename, :storage_path, :mime_type,
             :size_bytes, :sha256, :page_count, 'pending'
         )
         RETURNING id, workspace_id, filename, storage_path, mime_type,
@@ -124,7 +125,7 @@ async def create_document(
     res = await db.execute(
         insert_query,
         {
-            "did": document_id,
+            "did": did,
             "wid": workspace_id,
             "filename": filename,
             "storage_path": storage_path,

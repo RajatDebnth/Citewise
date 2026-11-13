@@ -5,10 +5,9 @@ import re
 import zipfile
 
 import fitz  # PyMuPDF
-from fastapi import UploadFile
-
 from app.core.config import settings
 from app.core.errors import AppException
+from fastapi import UploadFile
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 MAX_DOCX_UNCOMPRESSED_BYTES = 50 * 1024 * 1024  # 50 MB

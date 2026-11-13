@@ -140,6 +140,62 @@
     - All 4 test suites passed.
   - `npm run build` passed with 0 errors.
   - `ruff check app tests` passed with 0 errors.
-- **Next Step:** Ready for Phase 5: Ingestion worker (`services/providers/base.py`, `gemini.py`, PyMuPDF page extractors, docx heading extractors, chunker, embedding cache, worker loop calling `claim_document_job`).
+- **Next Step:** Completed. Ready for Phase 5.
+
+## 2026-11-13 - Phase 5: Ingestion Worker Pipeline
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Implemented `backend/app/services/providers/base.py`:
+    - Defined abstract `EmbeddingProvider` (`dimension`, `model_name`, `embed_documents`, `embed_query`).
+    - Defined abstract `LLMProvider` (`model_name`, `generate`).
+  - Implemented `backend/app/services/providers/gemini.py`:
+    - `GeminiEmbeddingProvider` using official `google-genai` SDK (`client.aio.models.embed_content`).
+    - Task types: `RETRIEVAL_DOCUMENT` for document chunks, `RETRIEVAL_QUERY` for queries.
+    - Reduced-dimension L2 normalization helper `l2_normalize` ensuring unit-norm vectors for 768-dim storage and search.
+    - Batched embedding up to `settings.EMBED_BATCH` (50).
+    - `TokenBucketLimiter` enforcing `settings.GEMINI_RPM` (15 RPM).
+    - `execute_with_retry` implementing exponential backoff with jitter on 429 and 5xx errors.
+    - Startup self-check `verify_embedding_dimension(provider)` asserting vector dimension matches `settings.EMBED_DIM` (768).
+    - `GeminiLLMProvider` for structured/JSON content generation.
+  - Implemented Text Cleaners & Extractors:
+    - `backend/app/services/ingestion/cleaner.py`: Unicode NFC normalization, null byte and non-printable control char stripping, de-hyphenation across line breaks, whitespace/newline collapsing, and `drop_repeated_headers_footers` for lines occurring on >60% of pages.
+    - `backend/app/services/ingestion/extractors.py`:
+      - PDF: PyMuPDF per-page extraction with font-size heuristic for section titles.
+      - DOCX: `python-docx` extracting paragraphs and tables grouped under Heading 1-3 styles.
+      - TXT: UTF-8 decoded single section.
+  - Implemented Chunker (`backend/app/services/ingestion/chunker.py`):
+    - Recursive splitting: headings -> paragraphs -> sentences -> words.
+    - Target ≈ 800 tokens (`settings.CHUNK_TOKENS`), overlap ≈ 120 tokens (`settings.CHUNK_OVERLAP`), max 1,000 tokens using `tiktoken` `cl100k_base`.
+    - Tracks `page_start`, `page_end`, and `section_title` per chunk.
+    - Prefixes embedding input with `"{filename} · {section_title}\n"` (or `"{filename}\n"`).
+    - Computes `content_sha256` per chunk.
+    - Drops chunks under 30 tokens (unless single chunk).
+    - Caps document at `settings.MAX_CHUNKS_PER_DOC` (400).
+  - Implemented Ingestion Worker (`backend/app/services/ingestion/worker.py`):
+    - Background asyncio loop calling PostgreSQL atomic function `claim_document_job()`.
+    - Sweeps stale processing jobs (`locked_at < now() - interval '10 minutes'`) and marks failed after 3 attempts.
+    - Embedding Cache: checks `embedding_cache` by `(content_sha256, model)` before calling provider; writes newly computed embeddings into `embedding_cache` and records `embed_call` in `usage_events`.
+    - In ONE atomic transaction: deletes old chunks for document, inserts all `document_chunks` with vectors, updates document to `ready` with `chunk_count`, `page_count`, and `processed_at`.
+    - Safe error handling: on any failure, logs full trace, rolls back, and marks document `failed` with safe error message. Cleans up `/tmp` file in `finally`.
+    - Integrated with FastAPI lifespan in `backend/app/main.py`.
+- **Tests & Verification:**
+  - Added comprehensive test suite `backend/tests/test_ingestion.py` (12 test cases):
+    - `test_cleaner_transformations`: Unicode normalization, null byte removal, de-hyphenation.
+    - `test_cleaner_repeated_headers_footers`: Header/footer removal across pages.
+    - `test_extract_txt`: Plain text extraction.
+    - `test_extract_docx_with_headings`: DOCX headings mapped to section titles.
+    - `test_extract_pdf_with_pages`: PDF page numbering and heading detection.
+    - `test_chunk_document_sizing_and_overlap`: Chunk token counts, overlap, and embed_input prefix.
+    - `test_l2_normalization`: Unit norm verification.
+    - `test_startup_dimension_self_check`: Verification of matching vs mismatched dimension.
+    - `test_ingestion_worker_pdf_to_ready`: End-to-end PDF processing reaching `ready` with chunks in DB.
+    - `test_embedding_cache_avoids_redundant_calls`: Re-uploading identical content chunks yields 0 provider calls.
+    - `test_corrupt_file_transitions_to_failed`: Corrupt document safely marked `failed`.
+    - `test_stale_lock_recovery_and_sweeper`: Stale lock re-claimed and sweeper marks max attempts as `failed`.
+  - Full test suite run (`pytest backend/tests`): 25 of 25 passed.
+  - `ruff check backend/app backend/tests`: Passed (0 errors).
+  - `npm run build` in `frontend`: Passed (0 errors).
+- **Next Step:** Ready for Phase 6: RAG chat backend (`retrieval/retriever.py` calling `match_chunks`, `rag/prompts.py`, `rag/pipeline.py`, `rag/citations.py`, conversation and message persistence, `POST /workspaces/{wid}/chat`, conversation CRUD, feedback, unanswered questions).
+
 
 
