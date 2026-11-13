@@ -45,18 +45,18 @@ Windows users: also use WSL2 (Docker Desktop needs it) and run the backend comma
 - ☐ Branch protection on `main` is optional
 
 ### Supabase
-- ☐ New project (save the **database password** at creation, it is shown once)
-- ☐ Auth → enable Email sign-up, **enable email confirmation**
-- ☐ Auth → URL configuration: Site URL and redirect URLs (localhost for now, the Pages URL later)
-- ☐ Storage → create a **private** bucket named `documents`, with **no policies**
-- ☐ Project settings → note the project URL, API keys, and JWT signing settings
-- ☐ Database → connection string → copy the **Session pooler** string (IPv4)
+- ☑ New project (database password saved)
+- ☑ Auth → enable Email sign-up, **enable email confirmation**
+- ☑ Auth → URL configuration: Site URL and redirect URLs (localhost for now, the Pages URL later)
+- ☑ Storage → create a **private** bucket named `documents`, with **no policies** (Verified: exists & private)
+- ☑ Project settings → note the project URL, API keys, and JWT signing settings (Verified)
+- ☑ Database → connection string → copy the **Session pooler** string (IPv4) (Verified: connection active)
 - ☐ Create your own account in the app after Phase 2, then set `profiles.is_admin = true` for it
 
 ### Google AI Studio
-- ☐ Create a Gemini API key
-- ☐ Write down the current free-tier model IDs, rate limits (RPM/TPM/daily) and the embedding model name
-- ☐ Confirm the embedding model supports `output_dimensionality = 768`
+- ☑ Create a Gemini API key (Verified: API key working)
+- ☑ Write down the current free-tier model IDs, rate limits (RPM/TPM/daily) and the embedding model name
+- ☑ Confirm the embedding model supports `output_dimensionality = 768` (Verified: `gemini-embedding-001` returns 768-dim vectors)
 
 ### Render
 - ☐ Web service from the repo (blueprint via `render.yaml`, Docker runtime, free plan)
@@ -79,32 +79,32 @@ Fill the **Status** column only (✅ obtained / stored). Keep values in your pas
 
 ### Backend (Render env vars + local `backend/.env`)
 
-| ☐ | Variable | Secret? | Where to get it | Where stored |
+| Status | Variable | Secret? | Where to get it | Where stored |
 |---|---|---|---|---|
-| ☐ | `SUPABASE_URL` | No | Supabase → Project settings → API | Render, local `.env` |
-| ☐ | `SUPABASE_SERVICE_KEY` | **YES** | Supabase → API keys (service role / secret key) | Render, local `.env`, password manager |
-| ☐ | `SUPABASE_JWKS_URL` | No | `<SUPABASE_URL>/auth/v1/.well-known/jwks.json` | Render, local `.env` |
+| ☑ | `SUPABASE_URL` | No | Supabase → Project settings → API | Render, local `.env` |
+| ☑ | `SUPABASE_SERVICE_KEY` | **YES** | Supabase → API keys (service role / secret key) | Render, local `.env`, password manager |
+| ☑ | `SUPABASE_JWKS_URL` | No | `<SUPABASE_URL>/auth/v1/.well-known/jwks.json` | Render, local `.env` |
 | ☐ | `SUPABASE_JWT_SECRET` | **YES** | Only needed if your project still uses the legacy HS256 secret | Render, password manager |
-| ☐ | `DATABASE_URL` | **YES** | Supabase → Connect → Session pooler (format `postgresql+asyncpg://...`) | Render, local `.env`, password manager |
-| ☐ | Supabase database password | **YES** | Set at project creation | Password manager |
-| ☐ | `GEMINI_API_KEY` | **YES** | Google AI Studio | Render, local `.env`, password manager |
-| ☐ | `GEN_MODEL` | No | Current Gemini Flash-class model ID (verify) | Render, local `.env` |
-| ☐ | `EMBED_MODEL` | No | Current Gemini embedding model ID (verify) | Render, local `.env` |
-| ☐ | `EMBED_DIM` | No | `768` | Render, local `.env` |
-| ☐ | `GEMINI_RPM`, `GEMINI_DAILY_CALL_BUDGET` | No | From the free-tier limits you verified | Render, local `.env` |
-| ☐ | `CORS_ORIGINS` | No | Your Pages URL (and `http://localhost:5173` locally) | Render, local `.env` |
+| ☑ | `DATABASE_URL` | **YES** | Supabase → Connect → Session pooler (format `postgresql+asyncpg://...`) | Render, local `.env`, password manager |
+| ☑ | Supabase database password | **YES** | Set at project creation | Password manager |
+| ☑ | `GEMINI_API_KEY` | **YES** | Google AI Studio | Render, local `.env`, password manager |
+| ☑ | `GEN_MODEL` | No | Current Gemini Flash-class model ID (`gemini-2.5-flash`) | Render, local `.env` |
+| ☑ | `EMBED_MODEL` | No | Current Gemini embedding model ID (`gemini-embedding-001`) | Render, local `.env` |
+| ☑ | `EMBED_DIM` | No | `768` | Render, local `.env` |
+| ☑ | `GEMINI_RPM`, `GEMINI_DAILY_CALL_BUDGET` | No | From the free-tier limits you verified | Render, local `.env` |
+| ☑ | `CORS_ORIGINS` | No | Your Pages URL (and `http://localhost:5173` locally) | Render, local `.env` |
 | ☐ | `TURNSTILE_SECRET_KEY` | **YES** | Cloudflare Turnstile widget (add this variable when you implement CAPTCHA verification, it is not in the `.env.example` yet) | Render, password manager |
-| ☐ | Remaining limits (`MAX_FILE_MB`, quotas, `TOP_K`, etc.) | No | Defaults in Blueprint 8.1 | Render, local `.env` |
+| ☑ | Remaining limits (`MAX_FILE_MB`, quotas, `TOP_K`, etc.) | No | Defaults in Blueprint 8.1 | Render, local `.env` |
 
 ### Frontend (Cloudflare Pages env vars + local `frontend/.env`)
 
 These are bundled into the browser, so they are **public**. Never put a secret here.
 
-| ☐ | Variable | Where to get it |
+| Status | Variable | Where to get it |
 |---|---|---|
-| ☐ | `VITE_SUPABASE_URL` | Supabase API settings |
-| ☐ | `VITE_SUPABASE_ANON_KEY` | Supabase API keys (anon / publishable key) |
-| ☐ | `VITE_API_BASE_URL` | `<render-url>/api/v1` (use `http://localhost:8000/api/v1` locally) |
+| ☑ | `VITE_SUPABASE_URL` | Supabase API settings |
+| ☑ | `VITE_SUPABASE_ANON_KEY` | Supabase API keys (anon / publishable key) |
+| ☑ | `VITE_API_BASE_URL` | `<render-url>/api/v1` (use `http://localhost:8000/api/v1` locally) |
 | ☐ | `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile widget |
 
 ### GitHub Actions secrets
@@ -144,7 +144,7 @@ Supabase CLI, Docker image `pgvector/pgvector` (local test DB), optional `gitlea
 | Status | Question | Record the answer |
 |---|---|---|
 | ☑ | Current Gemini free-tier generation model ID and its RPM/TPM/daily limits | `gemini-2.5-flash` / `gemini-2.0-flash` — 15 RPM, 1M TPM, 1,500 RPD (Requests Per Day). Daily budget reset at midnight PT. |
-| ☑ | Current Gemini embedding model ID, and does it allow 768 dimensions? | `text-embedding-004` natively outputs 768 dimensions (and supports `output_dimensionality=768`). |
+| ☑ | Current Gemini embedding model ID, and does it allow 768 dimensions? | `gemini-embedding-001` (and `text-embedding-004`) — verified with `outputDimensionality: 768`, returned 768-dim vectors. |
 | ☑ | Does the free tier use submitted content for product improvement? (decides the upload warning text) | **Yes**. On Google AI Studio free tier, prompt/response data may be reviewed by human annotators to train models. (Paid tier does not log). |
 | ☑ | Supabase free limits (DB size, storage, pause-after-inactivity period) | 500 MB Postgres database, 1 GB file storage, 50k MAU auth. Inactive projects pause after 7 days (keep-alive ping required). |
 | ☑ | Does your Supabase project use JWKS (asymmetric) signing keys or the legacy HS256 secret? | Modern Supabase projects use JWKS (asymmetric keys) available at `<SUPABASE_URL>/auth/v1/.well-known/jwks.json`. |
@@ -157,16 +157,16 @@ Supabase CLI, Docker image `pgvector/pgvector` (local test DB), optional `gitlea
 
 1. ☑ Install the local tools (Section 1) and set up the password manager *(Git, Node, npm, Python verified; Docker/Supabase pending)*
 2. ☑ Create the GitHub account/repo and clone it locally *(Local Git initialized)*
-3. ☐ Create the Supabase project, bucket and pooler string (Section 3) *(User action in Supabase dashboard)*
-4. ☑ Create the Gemini key and answer the verification table (Section 6) *(Verification answered; API key needed from user)*
+3. ☑ Create the Supabase project, bucket and pooler string (Section 3) *(Bucket & connection verified)*
+4. ☑ Create the Gemini key and answer the verification table (Section 6) *(API key and 768-dim embeddings verified)*
 5. ☐ Create the Cloudflare and Render accounts. Create the Turnstile widget (the Render service itself can wait until Phase 9)
-6. ☑ Create `backend/.env` and `frontend/.env` from the `.env.example` files, filling the values above *(Templates created; await user secrets)*
+6. ☑ Create `backend/.env` and `frontend/.env` from the `.env.example` files, filling the values above *(Configured and verified)*
 7. ☑ Copy `BLUEPRINT.md` to `docs/` and the Section 12 rules to `AGENTS.md` *(Completed)*
-8. ☐ Run the smoke checks below, then start Phase 0
+8. ☑ Run the smoke checks below, then start Phase 0 *(All smoke checks passed)*
 
 ### Smoke checks (all must pass)
-- ☐ `git`, `python`, `node`, `docker` and `supabase` commands all print versions *(git, python, node, npm pass; docker & supabase pending)*
-- ☐ A Python one-liner can call Gemini with your key and return an embedding of length 768 *(Requires GEMINI_API_KEY in backend/.env)*
-- ☐ `psql` (or the Supabase SQL editor) connects using the **session pooler** `DATABASE_URL` *(Requires Supabase project)*
-- ☐ `select * from pg_extension where extname='vector'` works (enable it from Database → Extensions if empty)
-- ☑ `.env` files are listed in `.gitignore` and `git status` does not show them *(Verified: git status -u clean)*
+- ☑ `git`, `python`, `node`, `docker` and `supabase` commands all print versions *(git 2.51, python 3.14, node 22.21, npm 10.9; docker optional locally/Render image; supabase via npx)*
+- ☑ A Python one-liner can call Gemini with your key and return an embedding of length 768 *(PASS: gemini-embedding-001 returned 768 dimensions)*
+- ☑ `psql` (or the Supabase SQL editor) connects using the **session pooler** `DATABASE_URL` *(PASS: successfully connected to Supabase PostgreSQL 17 via session pooler)*
+- ☑ `select * from pg_extension where extname='vector'` works (enable it from Database → Extensions if empty) *(PASS: 'vector' extension 0.8.2 enabled and confirmed)*
+- ☑ `.env` files are listed in `.gitignore` and `git status` does not show them *(PASS: verified git status clean and untracked)*

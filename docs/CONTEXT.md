@@ -1,13 +1,15 @@
 # Project Context & Handoff Log
 
 ## 2026-11-13 - Initial Setup & Prerequisites Verification
-- **Status:** Prerequisites review and initial project scaffolding setup complete. No code/building started yet.
-- **Decisions:**
+- **Status:** Prerequisites review and initial project scaffolding setup complete.
+- **Decisions & Verifications:**
   - Initialized Git repository.
   - Placed `BLUEPRINT.md` in `docs/` and established `AGENTS.md` rules at repo root.
   - Setup `.gitignore` with strict rules for `.env` files, secrets, build artifacts, and virtual environments.
-  - Prepared `.env.example` templates for `backend/` and `frontend/`.
-- **Known Issues / Pending User Actions:**
-  - Need external account setups and secrets (Supabase, Google AI Studio, Cloudflare, Render) before running live smoke tests and beginning Phase 0 scaffolding.
-  - Docker Desktop is not currently detected in local environment; required for local pgvector testing.
-- **Next Step:** Complete user accounts/secrets registration in local `.env` files, run smoke checks, then begin Phase 0.
+  - Verified local tools: Git (2.51.1), Node.js (22.21.0), npm (10.9.4), Python (3.14.0 with venv in `backend/.venv`).
+  - Verified Gemini API key: Google AI Studio key tested with `gemini-embedding-001`, confirmed 768-dimensional embedding generation. Updated `EMBED_MODEL=gemini-embedding-001`.
+  - Verified Supabase configuration: Connected to PostgreSQL 17 on session pooler, verified private `documents` bucket, verified JWKS endpoint, and successfully enabled the `vector` extension (v0.8.2).
+  - All 5 smoke checks passed.
+- **Next Step:** Ready to begin Phase 0 (monorepo scaffolding, FastAPI app factory, config, /health, Vite+React+TS shell).
+
+

@@ -27,3 +27,4 @@
 ## Finishing a phase
 - Report: what changed, how to run it, tests run + results, anything skipped.
 - Append a dated entry to docs/CONTEXT.md: decisions, file map changes, known issues, next step.
+
