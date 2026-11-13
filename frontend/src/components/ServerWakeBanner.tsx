@@ -14,3 +14,4 @@ export const ServerWakeBanner: React.FC = () => {
     </div>
   );
 };
+

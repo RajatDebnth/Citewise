@@ -98,6 +98,48 @@
   - Both backend (port 8000) and frontend (port 5173) dev servers running continuously in the background as daemons.
   - Probed live endpoints: `/api/v1/health` returned `status: ok` (200), frontend root returned status 200.
   - Frontend build: `npm run build` executed `tsc && vite build` successfully with 0 errors.
-- **Next Step:** Ready for Phase 4: Document upload, validation, and storage pipeline (Section 5.2.1, S11-S15 validators, Supabase storage upload, dedupe, confidentiality ack, documents UI).
+- **Next Step:** Completed. Ready for Phase 4.
+
+## 2026-11-13 - Phase 4: Document Upload and Storage Pipeline
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Implemented `backend/app/core/storage.py`: `SupabaseStorageService` wrapping private Supabase Storage bucket (`documents`) using `SUPABASE_SERVICE_KEY` for upload, delete, and 5-minute signed URL creation (`/storage/v1/object/sign`).
+  - Implemented `backend/app/services/ingestion/validators.py` per S11-S15:
+    - Streaming byte limit enforcing `MAX_FILE_MB = 10` during streaming without buffering whole payload.
+    - Magic bytes and format validation: `.pdf` (`%PDF-`), `.docx` (`PK\x03\x04`), `.txt` (valid UTF-8).
+    - Encrypted PDF rejection (PyMuPDF `doc.is_encrypted` check).
+    - PDF page limit enforcement (`MAX_PAGES = 150`).
+    - DOCX zip-bomb guard (uncompressed size <= 50 MB, compression ratio <= 100:1).
+    - Filename sanitization (strips traversal, control chars, limits to 200 chars).
+    - Storage path `{workspace_id}/{document_id}/original` (never client-supplied).
+  - Implemented `backend/app/repositories/documents.py`:
+    - All functions require `workspace_id`.
+    - Global killswitch check against `app_settings.uploads_enabled`.
+    - Daily upload quota (`DAILY_UPLOADS_PER_USER`) and workspace limit (`MAX_DOCS_PER_WORKSPACE`) checked and usage event inserted in the same transaction (S16, S18).
+    - SHA-256 deduplication per workspace returning HTTP 409 Conflict.
+    - Audit log entries for `upload_ack` (recording confidentiality acknowledgment) and `document_delete`.
+  - Implemented `backend/app/api/v1/documents.py`:
+    - `POST /workspaces/{wid}/documents` (requires `confidentiality_ack`, creates pending doc, returns 202)
+    - `GET /workspaces/{wid}/documents` (lists workspace documents)
+    - `GET /workspaces/{wid}/documents/{did}` (detail + error message)
+    - `POST /workspaces/{wid}/documents/{did}/retry` (resets failed doc to pending)
+    - `GET /workspaces/{wid}/documents/{did}/download` (returns 5-min signed URL)
+    - `DELETE /workspaces/{wid}/documents/{did}` (removes Storage object then DB row, returns 204)
+  - Implemented `frontend/src/pages/DocumentsPage.tsx`:
+    - Drag-and-drop file upload zone with format and 10 MB size checks.
+    - Confidentiality acknowledgment checkbox.
+    - Live status badges: `pending`, `processing` (spinner), `ready`, and `failed`.
+    - Auto-polling every 3s while any document is in pending or processing state.
+    - Download button, retry button for failed documents, delete confirmation modal.
+- **Tests & Verification:**
+  - Added test suite `backend/tests/test_documents.py`:
+    - `test_document_validation_and_rejection`: fake exe PDF, encrypted PDF, >150 pages PDF, zip bomb DOCX, missing XML DOCX, missing confidentiality ack, invalid extension all rejected with 400.
+    - `test_document_lifecycle_and_deduplication`: upload (202), list, get detail, signed download, duplicate SHA-256 conflict (409), delete (204), and 404 confirmation.
+    - `test_document_retry_flow`: resetting failed document to pending (200), rejecting retry on non-failed docs (400).
+    - `test_documents_cross_tenant_isolation_returns_404`: Tenant B receives 404 for list, detail, download, retry, delete, and upload on Tenant A's workspace.
+    - All 4 test suites passed.
+  - `npm run build` passed with 0 errors.
+  - `ruff check app tests` passed with 0 errors.
+- **Next Step:** Ready for Phase 5: Ingestion worker (`services/providers/base.py`, `gemini.py`, PyMuPDF page extractors, docx heading extractors, chunker, embedding cache, worker loop calling `claim_document_job`).
 
 

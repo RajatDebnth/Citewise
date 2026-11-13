@@ -45,3 +45,34 @@ export interface ApiError {
   code: string;
   message: string;
 }
+
+export type DocumentStatus = 'pending' | 'processing' | 'ready' | 'failed';
+
+export interface DocumentSummary {
+  id: string;
+  filename: string;
+  mime_type: string;
+  size_bytes: number;
+  status: DocumentStatus;
+  page_count?: number | null;
+  chunk_count: number;
+  created_at: string;
+  error_message?: string | null;
+}
+
+export interface DocumentDetail extends DocumentSummary {
+  workspace_id: string;
+  storage_path?: string | null;
+  attempts: number;
+  processed_at?: string | null;
+}
+
+export interface DocumentUploadResponse {
+  id: string;
+  status: DocumentStatus;
+}
+
+export interface DocumentDownloadResponse {
+  download_url: string;
+  expires_in: number;
+}

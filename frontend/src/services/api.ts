@@ -1,5 +1,13 @@
 import { supabase } from '../lib/supabase';
-import { UserMeResponse, WorkspaceDetail, WorkspaceSummary } from '../types';
+import {
+  DocumentDetail,
+  DocumentDownloadResponse,
+  DocumentSummary,
+  DocumentUploadResponse,
+  UserMeResponse,
+  WorkspaceDetail,
+  WorkspaceSummary,
+} from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 const DEFAULT_TIMEOUT_MS = 90_000; // 90 seconds timeout per Blueprint Section 9
@@ -173,6 +181,30 @@ export const workspacesApi = {
 // User profile and quota endpoints
 export const userApi = {
   getMe: () => api.get<UserMeResponse>('/me'),
+};
+
+// Document endpoints
+export const documentsApi = {
+  list: (wid: string) => api.get<DocumentSummary[]>(`/workspaces/${wid}/documents`),
+  get: (wid: string, did: string) =>
+    api.get<DocumentDetail>(`/workspaces/${wid}/documents/${did}`),
+  upload: (wid: string, file: File, confidentialityAck: boolean) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('confidentiality_ack', String(confidentialityAck));
+    return api.post<DocumentUploadResponse>(
+      `/workspaces/${wid}/documents`,
+      formData
+    );
+  },
+  retry: (wid: string, did: string) =>
+    api.post<DocumentSummary>(`/workspaces/${wid}/documents/${did}/retry`),
+  download: (wid: string, did: string) =>
+    api.get<DocumentDownloadResponse>(
+      `/workspaces/${wid}/documents/${did}/download`
+    ),
+  delete: (wid: string, did: string) =>
+    api.delete<void>(`/workspaces/${wid}/documents/${did}`),
 };
 
 // Health endpoints

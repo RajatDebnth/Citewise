@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.api.v1.documents import router as documents_router
 from app.api.v1.health import router as health_router
 from app.api.v1.me import router as me_router
 from app.api.v1.workspaces import router as workspaces_router
@@ -97,6 +98,7 @@ def create_app() -> FastAPI:
     # API Routers
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(workspaces_router, prefix="/api/v1")
+    app.include_router(documents_router, prefix="/api/v1")
     app.include_router(me_router, prefix="/api/v1")
 
     return app
