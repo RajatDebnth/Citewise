@@ -195,7 +195,61 @@
   - Full test suite run (`pytest backend/tests`): 25 of 25 passed.
   - `ruff check backend/app backend/tests`: Passed (0 errors).
   - `npm run build` in `frontend`: Passed (0 errors).
-- **Next Step:** Ready for Phase 6: RAG chat backend (`retrieval/retriever.py` calling `match_chunks`, `rag/prompts.py`, `rag/pipeline.py`, `rag/citations.py`, conversation and message persistence, `POST /workspaces/{wid}/chat`, conversation CRUD, feedback, unanswered questions).
+- **Next Step:** Completed. Ready for Phase 6.
+
+## 2026-11-13 - Phase 6: RAG Chat Backend Pipeline
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Implemented `backend/app/retrieval/retriever.py`:
+    - `match_workspace_chunks`: calls PostgreSQL function `match_chunks(p_workspace_id, p_query, p_k, p_document_ids)` using cosine similarity.
+    - Guaranteed workspace isolation (S4, S5). Restricts candidate chunks to `status = 'ready'` documents only.
+  - Implemented `backend/app/rag/prompts.py`:
+    - Strict system prompt requiring facts to come exclusively from `<sources>`, treating source content as untrusted data (prompt injection defense), citing source numbers like `[1]`, and returning JSON schema `{"answerable": bool, "answer": str, "used_sources": [int]}`.
+    - `format_user_prompt`: builds XML `<source n="..." file="..." pages="..." section="...">` blocks.
+    - `format_condense_prompt`: handles question condensation for follow-up turns when conversation history exists and `CONDENSE_ENABLED=True`.
+  - Implemented `backend/app/rag/citations.py`:
+    - `strip_html`: removes `<script>...</script>` and `<style>...</style>` blocks along with raw HTML tags to prevent XSS while preserving markdown and citation markers.
+    - `parse_llm_json`: parses structured JSON, extracts code fence wrappers, validates required fields.
+    - `build_citations`: drops hallucinated or invalid source indices (`used_sources` outside `1..k`), verifies indices against DB chunk metadata, extracts 300-char snippets, and sets `grounded=False` if no valid sources were cited.
+  - Implemented `backend/app/rag/pipeline.py`:
+    - `ask_question`:
+      1. Enforces global killswitch `app_settings.chat_enabled`.
+      2. Enforces daily question quota (`DAILY_QUESTIONS_PER_USER`) and logs `question` usage event in the same transaction.
+      3. Gets or creates conversation scoped to `(workspace_id, user_id)`.
+      4. Rewrites follow-up questions to standalone query if history exists and `CONDENSE_ENABLED=True`.
+      5. Saves user message in `messages` table.
+      6. Embeds query with `RETRIEVAL_QUERY` task type and L2 normalization.
+      7. Retrieves chunks via `match_workspace_chunks`.
+      8. Retrieval gate: if top similarity score is below `settings.RETRIEVAL_MIN_SCORE` (0.50) or no chunks found, immediately returns `"I couldn't find this in the uploaded documents."`, `grounded=False`, `citations=[]`, without calling the LLM, and inserts an `unanswered_questions` row.
+      9. Calls LLM provider with `ANSWER_JSON_SCHEMA`, logs `llm_call` usage event. Retries once on JSON parse failure.
+      10. Builds verified citations and persists assistant message with latency and grounding flags.
+  - Implemented `backend/app/repositories/conversations.py`:
+    - Scoped conversation CRUD (`get_or_create_conversation`, `list_workspace_conversations`, `get_conversation_with_messages`, `rename_conversation`, `delete_conversation`).
+    - Message feedback upsert (`upsert_message_feedback`) ensuring message belongs to caller's workspace.
+    - Unanswered questions tracking (`record_unanswered_question`, `list_unanswered_questions`, `update_unanswered_status`).
+  - Implemented `backend/app/api/v1/chat.py`:
+    - `POST /workspaces/{wid}/chat` (rate limited at 30/min).
+    - `GET /workspaces/{wid}/conversations`
+    - `GET /workspaces/{wid}/conversations/{cid}`
+    - `PATCH /workspaces/{wid}/conversations/{cid}`
+    - `DELETE /workspaces/{wid}/conversations/{cid}`
+    - `POST /messages/{mid}/feedback`
+    - `GET /workspaces/{wid}/unanswered`
+    - `PATCH /workspaces/{wid}/unanswered/{uid}`
+  - Registered `chat_router` in `backend/app/main.py`.
+- **Tests & Verification:**
+  - Added comprehensive test suite `backend/tests/test_chat.py` (6 test cases):
+    - `test_chat_grounded_answer`: Happy path with citation `[1]`, verified filename, page, section, score > 0.9.
+    - `test_chat_retrieval_threshold_fallback_without_llm`: Off-topic query with similarity < 0.50 returns fallback without calling LLM (call count = 0), and creates `unanswered_questions` row.
+    - `test_chat_invalid_citation_index_handled_gracefully`: Hallucinated source index `[99]` dropped by citation validator and marked `grounded=False`.
+    - `test_chat_prompt_injection_safety_and_html_stripping`: Malicious `<script>` tags and prompt injection text sanitized safely.
+    - `test_cross_tenant_chat_and_retrieval_isolation`: Tenant B receives 404 attempting to chat in Workspace A, and querying in Workspace B never retrieves Tenant A's documents.
+    - `test_conversations_crud_and_feedback_flow`: Full conversation lifecycle (chat -> list -> detail -> rename -> feedback -> delete -> 404).
+  - All 6 chat tests passed.
+  - `ruff check backend/app backend/tests`: Passed (0 errors).
+  - `npm run build` in `frontend`: Passed (0 errors).
+- **Next Step:** Ready for Phase 7: Chat Frontend (`ChatPage.tsx`, conversation list, message view with safe markdown, inline citation chips `[n]` opening citation side panel, 👍/👎 feedback buttons, ungrounded / not-found state, and unanswered questions page).
+
 
 
 
