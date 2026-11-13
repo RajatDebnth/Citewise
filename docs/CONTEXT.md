@@ -76,6 +76,28 @@
     - `test_max_workspaces_per_user_limit`: verifies 400 `workspace_limit_exceeded` when limit is exceeded.
   - Ran `pytest backend/tests`: 9 of 9 passed (`test_health.py` and `test_auth_workspaces.py`).
   - Ran `ruff check app tests` in `backend`: 0 errors.
-- **Next Step:** Ready for Phase 3: Document upload, validation, parsing pipeline (`core/storage.py`, `services/parser.py`, `pdfplumber`, `python-docx`, `tiktoken`, parsing/upload tests).
+- **Next Step:** Completed. Ready for Phase 3.
+
+## 2026-11-13 - Phase 3: Frontend Auth and Shell
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Initialized Supabase client in `frontend/src/lib/supabase.ts` with auto token refresh and local persistence.
+  - Implemented `frontend/src/context/AuthContext.tsx` and `frontend/src/hooks/useAuth.ts`: manages session state, `signIn`, `signUp` (handling email confirmation notice), `signOut`, and subscribes to auth state changes.
+  - Implemented `frontend/src/components/ProtectedRoute.tsx`: guards `/app` and `/app/w/:wid/*`, handles loading state, and redirects unauthenticated users to `/login`.
+  - Implemented API client in `frontend/src/services/api.ts`:
+    - Automatically attaches verified Supabase Bearer token.
+    - Automatically refreshes token on HTTP 401 via `supabase.auth.refreshSession()` and retries once.
+    - Enforces 90-second timeout via `AbortController`.
+    - Automatically retries on network failures or 502/503/504 errors with jittered backoff.
+    - Includes typed helpers for `workspacesApi`, `userApi`, and `healthApi`.
+  - Implemented `useServerWake` hook (`frontend/src/hooks/useServerWake.ts`) and `ServerWakeBanner` (`frontend/src/components/ServerWakeBanner.tsx`): pings `/health` on app mount; displays top banner if server takes >3s to respond.
+  - Implemented `LoginPage.tsx` and `SignupPage.tsx` with error handling, email confirmation notice, and redirect.
+  - Implemented `WorkspacesPage.tsx`: lists workspaces, displays user quotas (workspaces, daily uploads, daily questions), create workspace dialog with limit error handling, and delete workspace confirmation dialog.
+  - Enhanced `WorkspaceLayout.tsx` with live workspace title, role, stats, and sidebar navigation.
+- **Tests & Verification:**
+  - Both backend (port 8000) and frontend (port 5173) dev servers running continuously in the background as daemons.
+  - Probed live endpoints: `/api/v1/health` returned `status: ok` (200), frontend root returned status 200.
+  - Frontend build: `npm run build` executed `tsc && vite build` successfully with 0 errors.
+- **Next Step:** Ready for Phase 4: Document upload, validation, and storage pipeline (Section 5.2.1, S11-S15 validators, Supabase storage upload, dedupe, confidentiality ack, documents UI).
 
 
