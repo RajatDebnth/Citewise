@@ -11,6 +11,8 @@ from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.v1.health import router as health_router
+from app.api.v1.me import router as me_router
+from app.api.v1.workspaces import router as workspaces_router
 from app.core.config import settings
 from app.core.errors import (
     AppException,
@@ -94,6 +96,8 @@ def create_app() -> FastAPI:
 
     # API Routers
     app.include_router(health_router, prefix="/api/v1")
+    app.include_router(workspaces_router, prefix="/api/v1")
+    app.include_router(me_router, prefix="/api/v1")
 
     return app
 

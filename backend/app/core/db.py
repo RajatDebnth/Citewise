@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from app.core.config import settings
 from app.core.logging import get_logger
@@ -23,7 +24,6 @@ def get_clean_database_url() -> str:
     url = settings.DATABASE_URL
     if not url:
         return ""
-    # Ensure scheme is postgresql+asyncpg://
     if not url.startswith("postgresql+asyncpg://"):
         url = re.sub(r"^postgresql://", "postgresql+asyncpg://", url)
     return url
@@ -31,16 +31,22 @@ def get_clean_database_url() -> str:
 
 def create_engine() -> AsyncEngine:
     db_url = get_clean_database_url()
-    return create_async_engine(
-        db_url,
-        pool_size=settings.DB_POOL_MAX,
-        max_overflow=0,
-        connect_args={
+    is_test = settings.APP_ENV == "test"
+    kwargs = {
+        "connect_args": {
             "statement_cache_size": 0,
             "prepared_statement_cache_size": 0,
             "server_settings": {"jit": "off"},
-        },
-    )
+        }
+    }
+    if is_test:
+        kwargs["poolclass"] = NullPool
+    else:
+        kwargs["poolclass"] = AsyncAdaptedQueuePool
+        kwargs["pool_size"] = settings.DB_POOL_MAX
+        kwargs["max_overflow"] = 0
+
+    return create_async_engine(db_url, **kwargs)
 
 
 engine: AsyncEngine = create_engine()

@@ -266,3 +266,4 @@ create policy "own messages" on messages for select
 
 -- Revoke direct API access to sensitive tables as well
 revoke all on document_chunks, embedding_cache, usage_events, audit_log, app_settings from anon, authenticated;
+

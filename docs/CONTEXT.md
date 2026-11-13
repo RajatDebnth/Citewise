@@ -44,6 +44,38 @@
   - `pytest backend/tests`: 3 passed in 9.04s (`test_health_check`, `test_deep_health_check`, `test_not_found_standard_error_shape`).
   - Live server test against `GET /api/v1/health/deep` returned `{"status": "ok", "db": "ok", "storage": "ok"}`.
   - `ruff check backend/app backend/tests scripts`: Passed with 0 errors.
-- **Next Step:** Phase 2: Auth and workspaces (`core/security.py`, verify Supabase JWTs via JWKS, `current_user`, `require_member`, workspace endpoints, and cross-tenant tests).
+- **Next Step:** Completed. Ready for Phase 2.
+
+## 2026-11-13 - Phase 2: Auth and Workspaces
+- **Status:** Complete. Acceptance criteria met.
+- **Decisions & Architecture:**
+  - Implemented `backend/app/core/security.py`:
+    - JWT decoding supports Supabase asymmetric keys via cached JWKS (`PyJWKClient` for `RS256`/`ES256`) and symmetric fallback via `SUPABASE_JWT_SECRET` (`HS256`).
+    - Validates unverified header algorithm, `exp`, `aud` ("authenticated" / "test_aud"), and UUID format of `sub`.
+    - `get_current_user`: extracts `Bearer` token and resolves `AuthenticatedUser(id, email, role, is_admin)`.
+    - `require_member(min_role)`: dependency factory checking workspace membership. Non-members receive HTTP 404 (zero existence leakage). Members without required role (e.g. member attempting owner action) receive HTTP 403 Forbidden.
+  - Implemented `backend/app/schemas/user.py` and `backend/app/schemas/workspace.py` using strict Pydantic models.
+  - Implemented repository `backend/app/repositories/workspaces.py`: all queries take `workspace_id` to strictly guarantee tenant isolation; logs audit events for creation and deletion (`CAST(:detail AS jsonb)`).
+  - Implemented workspace endpoints in `backend/app/api/v1/workspaces.py`:
+    - `POST /api/v1/workspaces` (enforces `MAX_WORKSPACES_PER_USER`, assigns caller as owner)
+    - `GET /api/v1/workspaces` (lists caller's workspaces)
+    - `GET /api/v1/workspaces/{wid}` (returns workspace detail and live document/chunk/member counts)
+    - `PATCH /api/v1/workspaces/{wid}` (renames workspace; owner only)
+    - `DELETE /api/v1/workspaces/{wid}` (cascades deletion and logs audit; owner only)
+    - `GET /api/v1/workspaces/{wid}/members` (lists members; member+)
+    - `POST /api/v1/workspaces/{wid}/members` and `DELETE /api/v1/workspaces/{wid}/members/{user_id}` (stubs returning 501 per Blueprint 13 Phase 2)
+  - Implemented `/api/v1/me` in `backend/app/api/v1/me.py`: returns profile (`id`, `email`, `display_name`, `is_admin`) and active daily quotas (questions, uploads, workspaces).
+  - Configured test engine in `backend/app/core/db.py` to use `NullPool` when `APP_ENV == "test"` to ensure asyncpg connections close cleanly across test event loops.
+- **Tests & Verification:**
+  - Added test suite `backend/tests/test_auth_workspaces.py` with 6 comprehensive test cases:
+    - `test_auth_token_validation`: anonymous, malformed, forged (invalid signature), expired, and invalid UUID `sub` tokens all rejected with 401.
+    - `test_me_endpoint_profile_and_quotas`: verifies profile and daily quota calculations.
+    - `test_workspace_crud_lifecycle`: full create, list, read details, rename, member list, delete, and 404 verification.
+    - `test_cross_tenant_isolation_returns_404`: second user gets HTTP 404 trying to read, rename, or delete another user's workspace, and does not see it in workspace lists.
+    - `test_member_vs_owner_role_permissions`: members can read workspace (200), but renaming or deleting returns 403 Forbidden.
+    - `test_max_workspaces_per_user_limit`: verifies 400 `workspace_limit_exceeded` when limit is exceeded.
+  - Ran `pytest backend/tests`: 9 of 9 passed (`test_health.py` and `test_auth_workspaces.py`).
+  - Ran `ruff check app tests` in `backend`: 0 errors.
+- **Next Step:** Ready for Phase 3: Document upload, validation, parsing pipeline (`core/storage.py`, `services/parser.py`, `pdfplumber`, `python-docx`, `tiktoken`, parsing/upload tests).
 
 
