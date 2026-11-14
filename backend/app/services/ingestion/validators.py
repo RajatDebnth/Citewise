@@ -25,7 +25,8 @@ def sanitize_filename(filename: str | None) -> str:
     # Normalize backslashes to forward slashes then strip directory components
     clean_name = os.path.basename(filename.replace("\\", "/"))
     # Remove control characters and problematic punctuation
-    clean_name = re.sub(r"[\x00-\x1f\x7f\\/:\*\?\"<>\|]", "_", clean_name).strip()
+    clean_name = re.sub(r"[\x00-\x1f\x7f\\/:\*\?\"<>\|]", "_", clean_name)
+    clean_name = re.sub(r"_+", "_", clean_name).strip()
     if not clean_name:
         clean_name = "document"
 

@@ -20,10 +20,13 @@ logger = get_logger("app.db")
 Base = declarative_base()
 
 
+DEFAULT_TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/knowledge_assistant_test"
+
+
 def get_clean_database_url() -> str:
     url = settings.DATABASE_URL
     if not url:
-        return ""
+        return DEFAULT_TEST_DATABASE_URL
     if not url.startswith("postgresql+asyncpg://"):
         url = re.sub(r"^postgresql://", "postgresql+asyncpg://", url)
     return url

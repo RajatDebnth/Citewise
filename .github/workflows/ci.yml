@@ -9,6 +9,20 @@ on:
 jobs:
   backend-lint-test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: knowledge_assistant_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +42,11 @@ jobs:
           ruff check backend/app backend/tests
 
       - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/knowledge_assistant_test
+          APP_ENV: test
+          SUPABASE_JWT_SECRET: super-secret-test-key-must-be-long-enough-32-chars
+          GEMINI_API_KEY: mock-api-key-for-testing-purposes-only
         run: |
           cd backend
           pytest
