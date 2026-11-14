@@ -393,6 +393,16 @@
   - `pytest backend/tests/test_ingestion.py`: 7 passed in 2.83s.
   - Pushed to `origin/main` (`c883c7c`).
 
+## 2026-11-14 - Fix Expired JWT Error Code and CI Schema Migration
+- **Issue:** `test_forged_and_invalid_jwt_attacks` failed with `AssertionError: assert 'invalid_token' == 'token_expired'` because generic `except jwt.PyJWTError` caught `ExpiredSignatureError` and masked it as `invalid_token`.
+- **Fix:**
+  - `backend/app/core/security.py`: Added explicit handling for `jwt.ExpiredSignatureError` to raise `UnauthorizedException(code="token_expired", message="Authentication token has expired")`.
+  - `.github/workflows/ci.yml`: Added step executing `psql` to initialize roles, `auth.users`, and `0001_init.sql` schema before pytest runs.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - Pushed to `origin/main` (`6c5c2e4`).
+
+
 
 
 
