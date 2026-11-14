@@ -13,6 +13,8 @@ settings.APP_ENV = "test"
 
 from app.core.db import AsyncSessionLocal, engine
 
+_db_initialized = False
+
 
 def _load_migration_sql() -> str:
     possible_paths = [
@@ -26,39 +28,37 @@ def _load_migration_sql() -> str:
     return ""
 
 
-@pytest_asyncio.fixture(scope="session", autouse=True)
-async def init_test_db():
-    """Initializes the database schema if running against a database."""
-    try:
-        async with engine.begin() as conn:
-            # Create auth schema, mock roles, and users table if not exists (simulates Supabase Auth)
-            await conn.execute(
-                text(
-                    """
-                    DO $$ BEGIN
-                      CREATE ROLE anon;
-                    EXCEPTION WHEN duplicate_object THEN NULL;
-                    END $$;
-                    DO $$ BEGIN
-                      CREATE ROLE authenticated;
-                    EXCEPTION WHEN duplicate_object THEN NULL;
-                    END $$;
-                    CREATE SCHEMA IF NOT EXISTS auth;
-                    CREATE TABLE IF NOT EXISTS auth.users (
-                        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                        email text UNIQUE,
-                        raw_user_meta_data jsonb DEFAULT '{}'::jsonb,
-                        created_at timestamptz DEFAULT now()
-                    );
-                    """
-                )
+async def _ensure_db_initialized():
+    global _db_initialized
+    if _db_initialized:
+        return
+    async with engine.begin() as conn:
+        # Create auth schema, mock roles, and users table if not exists (simulates Supabase Auth)
+        await conn.execute(
+            text(
+                """
+                DO $$ BEGIN
+                  CREATE ROLE anon;
+                EXCEPTION WHEN duplicate_object THEN NULL;
+                END $$;
+                DO $$ BEGIN
+                  CREATE ROLE authenticated;
+                EXCEPTION WHEN duplicate_object THEN NULL;
+                END $$;
+                CREATE SCHEMA IF NOT EXISTS auth;
+                CREATE TABLE IF NOT EXISTS auth.users (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    email text UNIQUE,
+                    raw_user_meta_data jsonb DEFAULT '{}'::jsonb,
+                    created_at timestamptz DEFAULT now()
+                );
+                """
             )
-            sql = _load_migration_sql()
-            if sql:
-                await conn.execute(text(sql))
-    except (OSError, SQLAlchemyError) as exc:
-        # If DB connection is unavailable in the environment, log and continue for unit tests
-        print(f"Test DB initialization notice: {exc}")
+        )
+        sql = _load_migration_sql()
+        if sql:
+            await conn.execute(text(sql))
+    _db_initialized = True
 
 
 @pytest.fixture(autouse=True)
@@ -70,6 +70,7 @@ def setup_test_env():
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Yields a database session for testing."""
     try:
+        await _ensure_db_initialized()
         async with AsyncSessionLocal() as session:
             yield session
     except (OSError, SQLAlchemyError) as exc:
@@ -83,6 +84,7 @@ async def create_user():
 
     async def _create(user_id: str, email: str, display_name: str | None = None):
         try:
+            await _ensure_db_initialized()
             async with engine.begin() as conn:
                 # Delete any existing user with this email or id so clean state is guaranteed
                 await conn.execute(
@@ -127,4 +129,3 @@ async def create_user():
                         pass
         except (OSError, SQLAlchemyError):
             pass
-
