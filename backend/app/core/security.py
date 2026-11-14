@@ -67,6 +67,10 @@ def decode_supabase_jwt(token: str) -> dict[str, Any]:
                     algorithms=["RS256", "ES256"],
                     options={"verify_aud": False, "verify_exp": True},
                 )
+            except jwt.ExpiredSignatureError as e:
+                raise UnauthorizedException(
+                    code="token_expired", message="Authentication token has expired"
+                ) from e
             except (PyJWKClientError, jwt.InvalidTokenError) as e:
                 logger.debug(f"JWKS verification failed: {e}")
 
@@ -79,6 +83,10 @@ def decode_supabase_jwt(token: str) -> dict[str, Any]:
                 algorithms=["HS256"],
                 options={"verify_aud": False, "verify_exp": True},
             )
+        except jwt.ExpiredSignatureError as e:
+            raise UnauthorizedException(
+                code="token_expired", message="Authentication token has expired"
+            ) from e
         except jwt.PyJWTError as e:
             logger.debug(f"HS256 verification failed: {e}")
 
