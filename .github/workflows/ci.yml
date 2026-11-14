@@ -43,7 +43,7 @@ jobs:
 
       - name: Initialize test database schema
         run: |
-          PGPASSWORD=password psql -h localhost -U postgres -d knowledge_assistant_test -c "DO \$\$ BEGIN CREATE ROLE anon; EXCEPTION WHEN duplicate_object THEN NULL; END \$\$; DO \$\$ BEGIN CREATE ROLE authenticated; EXCEPTION WHEN duplicate_object THEN NULL; END \$\$; CREATE SCHEMA IF NOT EXISTS auth; CREATE TABLE IF NOT EXISTS auth.users (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), email text UNIQUE, raw_user_meta_data jsonb DEFAULT '{}'::jsonb, created_at timestamptz DEFAULT now());"
+          PGPASSWORD=password psql -h localhost -U postgres -d knowledge_assistant_test -f backend/tests/setup_test_db.sql
           PGPASSWORD=password psql -h localhost -U postgres -d knowledge_assistant_test -f supabase/migrations/0001_init.sql
 
       - name: Run unit tests

@@ -19,7 +19,8 @@ import {
   WorkspaceSummary,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1').trim().replace(/\/+$/, '');
+const API_BASE_URL = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase}/api/v1`;
 const DEFAULT_TIMEOUT_MS = 90_000; // 90 seconds timeout per Blueprint Section 9
 
 export class ApiException extends Error {
@@ -54,7 +55,8 @@ export async function apiFetch<T>(
     ...fetchOptions
   } = options;
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}/${cleanEndpoint}`;
 
   // Helper to execute single attempt
   const executeAttempt = async (tokenOverride?: string): Promise<Response> => {

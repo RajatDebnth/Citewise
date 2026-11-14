@@ -411,7 +411,17 @@
   - `backend/tests/conftest.py`: Removed redundant multi-statement schema initialization since GitHub Actions CI applies migrations cleanly via `psql` in `.github/workflows/ci.yml`. Simplified `_ensure_db_initialized()` to `SELECT 1` ping and cleaned up unused `import os`.
 - **Verification:**
   - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
-  - Pushed to `origin/main`.
+  - Pushed to `origin/main` (`b7192f6`).
+
+## 2026-11-14 - Preemptive Fixes: CI Test Schema, Frontend API Base URL, & CORS Aliasing
+- **Issues Reviewed & Fixed:**
+  1. **CI PostgreSQL Schema Initialization**: In headless CI with `pgvector/pgvector:pg16`, `0001_init.sql` creates RLS policies using `auth.uid()` and `auth.role()`. Because vanilla PostgreSQL lacks these Supabase-internal functions, policy creation emitted missing-function errors. Created `backend/tests/setup_test_db.sql` with mock `auth.uid()`, `auth.role()`, `auth.users`, and roles `anon`/`authenticated`, and executed it prior to `0001_init.sql` in `.github/workflows/ci.yml`.
+  2. **Frontend API URL Normalization**: In `frontend/src/services/api.ts`, normalized `API_BASE_URL` so that trailing slashes and omitting `/api/v1` in `VITE_API_BASE_URL` are automatically handled without generating 404s or double-slash URLs.
+  3. **Backend CORS Alias Support**: Added `AliasChoices("CORS_ORIGINS", "CORS_ORIGIN")` in `backend/app/core/config.py` so both singular and plural environment variable configurations on Render are parsed cleanly.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - `cd frontend; npx tsc --noEmit`: Clean typecheck (0 errors).
+  - `cd frontend; npm run build`: Vite production bundle generated cleanly.
 
 
 

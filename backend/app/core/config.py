@@ -1,5 +1,5 @@
 
-from pydantic import field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,7 +12,10 @@ class Settings(BaseSettings):
 
     APP_ENV: str = "production"
     LOG_LEVEL: str = "INFO"
-    CORS_ORIGINS: str | list[str] = "http://localhost:5173,https://citewise-3ip.pages.dev,https://citewise.pages.dev"
+    CORS_ORIGINS: str | list[str] = Field(
+        default="http://localhost:5173,https://citewise-3ip.pages.dev,https://citewise.pages.dev",
+        validation_alias=AliasChoices("CORS_ORIGINS", "CORS_ORIGIN"),
+    )
 
     # Supabase
     SUPABASE_URL: str = ""
