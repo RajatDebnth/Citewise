@@ -14,7 +14,24 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        serif: ['"DM Serif Display"', 'Georgia', 'serif'],
+        sans: ['"DM Sans"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+      },
       colors: {
+        paper: "#f7f7ed",
+        paperWhite: "#fffef9",
+        ink: "#171a17",
+        forest: {
+          DEFAULT: "#075448",
+          dark: "#0c6657",
+          light: "#147a69",
+        },
+        lime: {
+          accent: "#d9f078",
+          subtle: "#eef8c6",
+        },
+        lineWarm: "#dfe2d5",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -58,4 +75,3 @@ export default {
   },
   plugins: [],
 }
-

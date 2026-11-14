@@ -4,6 +4,15 @@
 
 @layer base {
   :root {
+    --paper: #f7f7ed;
+    --paper-white: #fffef9;
+    --ink: #171a17;
+    --muted-paper: #686d65;
+    --green-deep: #075448;
+    --green-hover: #0c6657;
+    --lime-accent: #d9f078;
+    --line-warm: #dfe2d5;
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -56,5 +65,40 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'DM Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
   }
+}
+
+/* Animations & Keyframes */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50% { transform: translateY(-7px) rotate(-4deg); }
+}
+
+@keyframes float-subtle-right {
+  0%, 100% { transform: translateY(0px) rotate(4deg); }
+  50% { transform: translateY(-7px) rotate(5deg); }
+}
+
+.animate-float-left {
+  animation: float-subtle 6s ease-in-out infinite;
+}
+
+.animate-float-right {
+  animation: float-subtle-right 6s ease-in-out 1s infinite;
+}
+
+.font-serif-display {
+  font-family: 'DM Serif Display', Georgia, serif;
 }
