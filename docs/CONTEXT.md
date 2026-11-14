@@ -382,6 +382,18 @@
   - `pytest --collect-only`: Successfully collected 36 test cases with 0 errors.
   - Pushed to `origin/main` (`ffb53ad`).
 
+## 2026-11-14 - Pytest-Asyncio ScopeMismatch Fix
+- **Issue:** `ScopeMismatch: You tried to access the function scoped fixture _function_scoped_runner with a session scoped request object. Requesting fixture stack: tests/conftest.py:29: def init_test_db()` occurred because `pytest.ini` specified `asyncio_default_fixture_loop_scope = function` while `init_test_db` was defined as an `autouse=True` session-scoped async fixture.
+- **Fix:**
+  - Removed the `session` autouse async fixture from `backend/tests/conftest.py`.
+  - Replaced it with a lazy `_ensure_db_initialized()` routine invoked synchronously/on-demand inside `db_session` and `create_user` fixtures.
+  - Pure unit tests now execute with zero database overhead or loop runner conflicts.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - `pytest backend/tests/test_ingestion.py`: 7 passed in 2.83s.
+  - Pushed to `origin/main` (`c883c7c`).
+
+
 
 
 
