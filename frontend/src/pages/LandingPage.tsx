@@ -163,9 +163,9 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-paper-grain text-[#171a17] selection:bg-[#d9f078] selection:text-[#075448] font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-paper-grain text-[#171a17] selection:bg-[#d9f078] selection:text-[#075448] font-sans relative overflow-x-clip">
       {/* 1. Top Announcement Bar */}
-      <div className="bg-[#075448] text-[#f7f7ed] text-xs font-medium py-2 px-4 text-center border-b border-[#04332c] flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+      <div className="bg-[#075448] text-[#f7f7ed] text-xs font-medium py-2.5 px-4 text-center border-b border-[#04332c] flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
         <WaveformVisualizer active={true} color="#d9f078" barCount={7} />
         <span>Strict Grounded RAG · pgvector 768d on Supabase</span>
         <span className="hidden sm:inline text-white/40">|</span>
@@ -178,57 +178,57 @@ export const LandingPage: React.FC = () => {
         </Link>
       </div>
 
-      {/* 2. Glassmorphic Sticky Navbar */}
-      <header className="sticky top-0 z-50 bg-[#f7f7ed]/85 backdrop-blur-md border-b border-[#dfe2d5]/80 transition-all">
-        <nav className="max-w-6xl mx-auto px-6 h-18 flex items-center justify-between">
-          {/* Logo with 3D brand badge */}
-          <Link to="/" className="flex items-center space-x-2.5 group">
+      {/* 2. Glassmorphic Sticky Navbar with 30% increased height and generous edge spacing */}
+      <header className="sticky top-0 z-50 w-full bg-[#f7f7ed]/92 backdrop-blur-md border-b border-[#dfe2d5]/90 shadow-[0_4px_24px_-4px_rgba(23,26,23,0.06)] transition-all">
+        <nav className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 h-20 sm:h-[88px] flex items-center justify-between">
+          {/* Logo with 3D brand badge and ample margin from edge */}
+          <Link to="/" className="flex items-center space-x-3 group py-2">
             <motion.div
               whileHover={{ rotate: 12, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 350 }}
-              className="w-8 h-8 rounded-lg bg-[#075448] text-[#d9f078] flex items-center justify-center font-black text-sm shadow-sm"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#075448] text-[#d9f078] flex items-center justify-center font-black text-sm sm:text-base shadow-sm"
             >
               ⌘
             </motion.div>
-            <span className="font-bold text-lg tracking-tight text-[#171a17]">
+            <span className="font-bold text-lg sm:text-xl tracking-tight text-[#171a17]">
               Citewise
             </span>
-            <span className="hidden sm:inline-block text-[10px] font-bold tracking-widest uppercase bg-[#e9eee2] text-[#425042] px-2 py-0.5 rounded-full border border-[#cbd4c0]">
+            <span className="hidden sm:inline-block text-[10px] font-bold tracking-widest uppercase bg-[#e9eee2] text-[#425042] px-2.5 py-0.5 rounded-full border border-[#cbd4c0]">
               v1.0
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-[#495147]">
-            <a href="#platform" className="hover:text-[#075448] transition-colors">
+          {/* Desktop Nav Links with spacious margins and generous breathing room */}
+          <div className="hidden md:flex items-center space-x-7 lg:space-x-9 text-sm font-medium text-[#495147]">
+            <a href="#platform" className="px-3 py-1.5 rounded-full hover:text-[#075448] hover:bg-[#075448]/5 transition-all">
               Platform
             </a>
-            <a href="#humanity" className="hover:text-[#075448] transition-colors">
+            <a href="#humanity" className="px-3 py-1.5 rounded-full hover:text-[#075448] hover:bg-[#075448]/5 transition-all">
               People
             </a>
-            <a href="#security" className="hover:text-[#075448] transition-colors">
+            <a href="#security" className="px-3 py-1.5 rounded-full hover:text-[#075448] hover:bg-[#075448]/5 transition-all">
               Trust & Safety
             </a>
-            <a href="#how-it-works" className="hover:text-[#075448] transition-colors">
+            <a href="#how-it-works" className="px-3 py-1.5 rounded-full hover:text-[#075448] hover:bg-[#075448]/5 transition-all">
               How it works
             </a>
-            <a href="#faq" className="hover:text-[#075448] transition-colors">
+            <a href="#faq" className="px-3 py-1.5 rounded-full hover:text-[#075448] hover:bg-[#075448]/5 transition-all">
               FAQ
             </a>
             <Link
               to="/demo"
-              className="text-[#075448] font-bold inline-flex items-center space-x-1 hover:underline"
+              className="text-[#075448] font-bold inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-[#075448]/8 hover:bg-[#075448]/15 transition-all"
             >
               <span>Public Demo</span>
               <span className="text-xs">↗</span>
             </Link>
           </div>
 
-          {/* Nav Actions */}
-          <div className="hidden md:flex items-center space-x-3">
+          {/* Nav Actions with comfortable padding and edge separation */}
+          <div className="hidden md:flex items-center space-x-4 pl-4">
             {user ? (
               <Link to="/app">
-                <MagneticButton className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm inline-flex items-center space-x-1.5">
+                <MagneticButton className="px-6 py-3 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm inline-flex items-center space-x-2">
                   <span>Go to Workspaces</span>
                   <span>→</span>
                 </MagneticButton>
@@ -237,12 +237,12 @@ export const LandingPage: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-semibold text-[#171a17] hover:text-[#075448] transition-colors"
+                  className="px-5 py-2.5 text-sm font-semibold text-[#171a17] hover:text-[#075448] transition-colors"
                 >
                   Sign in
                 </Link>
                 <Link to="/signup">
-                  <MagneticButton className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm">
+                  <MagneticButton className="px-6 py-3 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm">
                     Get started ↗
                   </MagneticButton>
                 </Link>

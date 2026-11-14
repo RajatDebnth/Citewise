@@ -13,9 +13,9 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="border-b bg-card">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        <Link to="/app" className="flex items-center space-x-2 font-bold text-sm sm:text-base tracking-tight hover:opacity-90">
+    <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur-md shadow-xs">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 h-[72px] flex items-center justify-between">
+        <Link to="/app" className="flex items-center space-x-2.5 font-bold text-sm sm:text-base tracking-tight hover:opacity-90">
           <BookOpen className="h-5 w-5 text-primary" />
           <span>Knowledge Assistant</span>
         </Link>

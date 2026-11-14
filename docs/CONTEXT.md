@@ -423,5 +423,12 @@
   - `cd frontend; npx tsc --noEmit`: Clean typecheck (0 errors).
   - `cd frontend; npm run build`: Vite production bundle generated cleanly.
 
-
+## 2026-11-14 - Navbar Refinement: 30% Height Increase, Edge Spacing & Sticky Fix
+- **Changes:**
+  - **Height:** Increased navbar height by ~30% (from 64px to 88px, `h-20 sm:h-[88px]`, with `[72px]` on authenticated app navbar).
+  - **Spacing:** Added generous horizontal breathing room (`px-6 sm:px-10 lg:px-14` inside `max-w-7xl mx-auto`), expanded link hit targets with pill hover states (`px-3 py-1.5 rounded-full`), and padded the brand logo and action buttons from navbar edges.
+  - **Sticky Behavior:** Replaced `overflow-x-hidden` on parent wrapper with `overflow-x-clip`, resolving the browser standard issue where `overflow-x: hidden` breaks CSS `position: sticky`. Enhanced `<header>` with `sticky top-0 z-50 bg-[#f7f7ed]/92 backdrop-blur-md border-b shadow-[0_4px_24px_-4px_rgba(23,26,23,0.06)]`.
+- **Verification:**
+  - `npm run build` in `frontend/`: Passed cleanly (0 errors).
+  - Pushed to `origin/main`.
 
