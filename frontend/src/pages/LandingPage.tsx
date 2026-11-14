@@ -32,6 +32,7 @@ import {
   HighlighterStroke,
   MagneticButton,
 } from '../components/landing/MotionComponents';
+import { useAuth } from '../hooks/useAuth';
 
 interface DemoQA {
   id: string;
@@ -124,6 +125,7 @@ const FAQS: FAQItem[] = [
 ];
 
 export const LandingPage: React.FC = () => {
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<'hr' | 'finance' | 'security'>('finance');
   const [selectedDemoIndex, setSelectedDemoIndex] = useState(0);
@@ -224,17 +226,28 @@ export const LandingPage: React.FC = () => {
 
           {/* Nav Actions */}
           <div className="hidden md:flex items-center space-x-3">
-            <Link
-              to="/login"
-              className="px-4 py-2 text-sm font-semibold text-[#171a17] hover:text-[#075448] transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link to="/signup">
-              <MagneticButton className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm">
-                Get started ↗
-              </MagneticButton>
-            </Link>
+            {user ? (
+              <Link to="/app">
+                <MagneticButton className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm inline-flex items-center space-x-1.5">
+                  <span>Go to Workspaces</span>
+                  <span>→</span>
+                </MagneticButton>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-semibold text-[#171a17] hover:text-[#075448] transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link to="/signup">
+                  <MagneticButton className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-[#075448] hover:bg-[#0c6657] text-[#fffef7] rounded-full shadow-sm">
+                    Get started ↗
+                  </MagneticButton>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -301,18 +314,29 @@ export const LandingPage: React.FC = () => {
                 Public Demo ↗
               </Link>
               <div className="pt-3 border-t border-[#171a17]/10 flex flex-col gap-2">
-                <Link
-                  to="/login"
-                  className="w-full text-center py-2 text-sm font-semibold rounded-lg border border-[#aeb8a9]"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  to="/signup"
-                  className="w-full text-center py-2 text-sm font-bold bg-[#075448] text-white rounded-lg"
-                >
-                  Get started ↗
-                </Link>
+                {user ? (
+                  <Link
+                    to="/app"
+                    className="w-full text-center py-2 text-sm font-bold bg-[#075448] text-white rounded-lg"
+                  >
+                    Go to Workspaces →
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="w-full text-center py-2 text-sm font-semibold rounded-lg border border-[#aeb8a9]"
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="w-full text-center py-2 text-sm font-bold bg-[#075448] text-white rounded-lg"
+                    >
+                      Get started ↗
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -1185,17 +1209,28 @@ export const LandingPage: React.FC = () => {
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-3.5">
-                <Link to="/demo">
-                  <MagneticButton className="px-7 py-3.5 bg-[#d9f078] hover:bg-[#eef8c6] text-[#075448] text-sm font-bold tracking-tight inline-flex items-center space-x-2 rounded-full shadow-md">
-                    <span>Explore public demo</span>
-                    <span className="text-xs">↗</span>
-                  </MagneticButton>
-                </Link>
-                <Link to="/signup">
-                  <MagneticButton className="px-7 py-3.5 bg-[#fffef7] hover:bg-[#f7f7ed] text-[#075448] text-sm font-bold tracking-tight inline-flex items-center space-x-2 rounded-full shadow-md">
-                    <span>Create free workspace</span>
-                  </MagneticButton>
-                </Link>
+                {user ? (
+                  <Link to="/app">
+                    <MagneticButton className="px-7 py-3.5 bg-[#d9f078] hover:bg-[#eef8c6] text-[#075448] text-sm font-bold tracking-tight inline-flex items-center space-x-2 rounded-full shadow-md">
+                      <span>Open your workspaces</span>
+                      <span className="text-xs">→</span>
+                    </MagneticButton>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/demo">
+                      <MagneticButton className="px-7 py-3.5 bg-[#d9f078] hover:bg-[#eef8c6] text-[#075448] text-sm font-bold tracking-tight inline-flex items-center space-x-2 rounded-full shadow-md">
+                        <span>Explore public demo</span>
+                        <span className="text-xs">↗</span>
+                      </MagneticButton>
+                    </Link>
+                    <Link to="/signup">
+                      <MagneticButton className="px-7 py-3.5 bg-[#fffef7] hover:bg-[#f7f7ed] text-[#075448] text-sm font-bold tracking-tight inline-flex items-center space-x-2 rounded-full shadow-md">
+                        <span>Create free workspace</span>
+                      </MagneticButton>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
