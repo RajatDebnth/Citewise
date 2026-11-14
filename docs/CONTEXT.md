@@ -358,12 +358,16 @@
       - `https://github.com/RajatDebnth/Citewise`: Repository link with external link icon.
     - Added in-page interactive sandbox terminal allowing users to test synthetic sample questions (travel, PTO, device security) and interact with expandable source citation drawers directly on the landing page before navigating to `/demo`.
     - Modern Lucide motion icons integrated across all 6 Trust & Safety architecture cards (`Shield`, `FileText`, `Lock`, `RefreshCw`, `CheckCircle2`, `Cpu`).
+  - Motion, ReactBits & Art Suite (`frontend/src/components/landing/`):
+    - `ArtAndIcons.tsx`: 3DIcons.co inspired 3D metallic and glassmorphic icons (`Icon3DShield`, `Icon3DDossier`, `Icon3DVault`, `Icon3DPrism`, `Icon3DLightning`, `Icon3DVectorCluster`). Handcrafted OpenPeeps character avatars (`PeepSarah`, `PeepMarcus`, `PeepElena`) and unDraw-style vector verification scene `SceneVerificationArt`.
+    - `MotionComponents.tsx`: ReactBits/Motion-Primitives components including mouse-tracking `SpotlightCard`, 3D physics `TiltCard`, Wispr Flow dynamic equalizer `WaveformVisualizer`, `HighlighterStroke` for animated text marker highlights, and spring-physics `MagneticButton`.
+    - Paper grain texture noise overlay added to `frontend/src/index.css`.
   - Font & Theme Styling (`frontend/index.html`, `frontend/src/index.css`, `frontend/tailwind.config.js`):
     - Loaded Google Fonts: `DM Sans`, `DM Serif Display`, and `Plus Jakarta Sans`.
     - Extended Tailwind font families (`font-serif`, `font-sans`) and custom color tokens (`paper`, `forest`, `lime`, `lineWarm`).
 - **Verification:**
   - `npm run build --prefix frontend`: Passed with 0 TypeScript/bundler errors (`tsc && vite build`).
-  - Git commit `b50590a` pushed to GitHub `origin/main` for automatic deployment to Cloudflare Pages (`https://citewise-3ip.pages.dev`).
+  - Git commits `2932bef` pushed to GitHub `origin/main` for automatic deployment to Cloudflare Pages (`https://citewise-3ip.pages.dev`).
 - **Next Step:** Production live monitoring and custom domain configuration if requested.
 
 
