@@ -137,6 +137,12 @@ async def get_current_user(
     user_id = UUID(payload["sub"])
     email = payload.get("email")
 
+    role = payload.get("role", "authenticated")
+    if role == "anon":
+        raise UnauthorizedException(
+            code="unauthorized", message="Anonymous role is not permitted on protected routes"
+        )
+
     is_admin = False
     if db is not None:
         try:

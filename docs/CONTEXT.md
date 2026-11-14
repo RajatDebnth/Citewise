@@ -402,13 +402,16 @@
   - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
   - Pushed to `origin/main` (`6c5c2e4`).
 
-
-
-
-
-
-
-
+## 2026-11-14 - Fix Anonymous Role Token Rejection (Rule S3) & Conftest Ping
+- **Issue:**
+  - `tests/test_auth_security.py::test_forged_and_invalid_jwt_attacks` failed assertion #7 (`assert 200 == 401`) because JWT tokens with `role == "anon"` were accepted on protected endpoints.
+  - Additionally, 21 database tests were skipped in CI due to asyncpg rejecting multi-statement raw SQL execution in `conftest.py`'s `_ensure_db_initialized()`.
+- **Fix:**
+  - `backend/app/core/security.py`: Added explicit check in `get_current_user` for `role == "anon"`, raising `UnauthorizedException(code="unauthorized", message="Anonymous role is not permitted on protected routes")` per Blueprint Security Rule S3.
+  - `backend/tests/conftest.py`: Removed redundant multi-statement schema initialization since GitHub Actions CI applies migrations cleanly via `psql` in `.github/workflows/ci.yml`. Simplified `_ensure_db_initialized()` to `SELECT 1` ping and cleaned up unused `import os`.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - Pushed to `origin/main`.
 
 
 

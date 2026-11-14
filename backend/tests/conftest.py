@@ -1,4 +1,3 @@
-import os
 from collections.abc import AsyncGenerator
 
 import pytest
@@ -16,48 +15,12 @@ from app.core.db import AsyncSessionLocal, engine
 _db_initialized = False
 
 
-def _load_migration_sql() -> str:
-    possible_paths = [
-        "supabase/migrations/0001_init.sql",
-        "../supabase/migrations/0001_init.sql",
-    ]
-    migration_path = next((p for p in possible_paths if os.path.exists(p)), None)
-    if migration_path:
-        with open(migration_path, "r", encoding="utf-8") as f:
-            return f.read()
-    return ""
-
-
 async def _ensure_db_initialized():
     global _db_initialized
     if _db_initialized:
         return
     async with engine.begin() as conn:
-        # Create auth schema, mock roles, and users table if not exists (simulates Supabase Auth)
-        await conn.execute(
-            text(
-                """
-                DO $$ BEGIN
-                  CREATE ROLE anon;
-                EXCEPTION WHEN duplicate_object THEN NULL;
-                END $$;
-                DO $$ BEGIN
-                  CREATE ROLE authenticated;
-                EXCEPTION WHEN duplicate_object THEN NULL;
-                END $$;
-                CREATE SCHEMA IF NOT EXISTS auth;
-                CREATE TABLE IF NOT EXISTS auth.users (
-                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                    email text UNIQUE,
-                    raw_user_meta_data jsonb DEFAULT '{}'::jsonb,
-                    created_at timestamptz DEFAULT now()
-                );
-                """
-            )
-        )
-        sql = _load_migration_sql()
-        if sql:
-            await conn.execute(text(sql))
+        await conn.execute(text("SELECT 1"))
     _db_initialized = True
 
 
