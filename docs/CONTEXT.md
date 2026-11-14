@@ -370,6 +370,19 @@
   - Git commits `2932bef` pushed to GitHub `origin/main` for automatic deployment to Cloudflare Pages (`https://citewise-3ip.pages.dev`).
 - **Next Step:** Production live monitoring and custom domain configuration if requested.
 
+## 2026-11-14 - GitHub Actions CI Database Engine Fix
+- **Issue:** GitHub Actions runner failed during `pytest` test collection with `sqlalchemy.exc.ArgumentError: Could not parse SQLAlchemy URL from given URL string` because `DATABASE_URL` was unset (empty string `""`) in the CI environment, triggering an immediate crash at module import time in `app.core.db:create_engine()`.
+- **Fix:**
+  - `backend/app/core/db.py`: Defined `DEFAULT_TEST_DATABASE_URL` so `get_clean_database_url()` never returns `""` when `settings.DATABASE_URL` is empty.
+  - `.github/workflows/ci.yml`: Added `pgvector/pgvector:pg16` service container with healthy readiness check, and provided test environment variables (`DATABASE_URL`, `APP_ENV=test`, `SUPABASE_JWT_SECRET`, `GEMINI_API_KEY`).
+  - `backend/tests/conftest.py`: Added session-scoped `init_test_db` fixture initializing the mock auth schema, roles (`anon`, `authenticated`), and applying migration DDL; wrapped DB fixtures to gracefully handle connection errors.
+  - `backend/app/services/ingestion/validators.py`: Normalized multiple underscore replacement in `sanitize_filename`.
+- **Verification:**
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
+  - `pytest --collect-only`: Successfully collected 36 test cases with 0 errors.
+  - Pushed to `origin/main` (`ffb53ad`).
+
+
 
 
 
