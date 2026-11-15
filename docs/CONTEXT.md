@@ -430,5 +430,17 @@
   - **Sticky Behavior:** Replaced `overflow-x-hidden` on parent wrapper with `overflow-x-clip`, resolving the browser standard issue where `overflow-x: hidden` breaks CSS `position: sticky`. Enhanced `<header>` with `sticky top-0 z-50 bg-[#f7f7ed]/92 backdrop-blur-md border-b shadow-[0_4px_24px_-4px_rgba(23,26,23,0.06)]`.
 - **Verification:**
   - `npm run build` in `frontend/`: Passed cleanly (0 errors).
+  - Pushed to `origin/main` (`299aeea`).
+
+## 2026-11-16 - Keepalive Workflow URL Fallback & Health Routing Fix
+- **Issue:**
+  - GitHub Actions keepalive workflow failed with `curl: (3) URL rejected: No host part in the URL` because repository secret `API_BASE_URL` was not configured on GitHub, expanding `"${{ secrets.API_BASE_URL }}/health/deep"` to `"/health/deep"`.
+- **Fix:**
+  - `.github/workflows/keepalive.yml`: Added fallback logic `${{ secrets.API_BASE_URL || vars.API_BASE_URL || 'https://knowledge-assistant-api-11ek.onrender.com' }}` and path normalization so it always targets `/api/v1/health/deep` cleanly.
+  - `backend/app/main.py`: Mounted `health_router` directly without prefix in addition to `/api/v1`, ensuring `/health` and `/health/deep` respond cleanly to pingers regardless of path prefix.
+- **Verification:**
+  - Live `curl -m 120 "https://knowledge-assistant-api-11ek.onrender.com/api/v1/health/deep"`: Returned HTTP 200 `{"status":"ok","db":"ok","storage":"ok"}`.
+  - `ruff check backend/app backend/tests`: Passed cleanly (0 errors).
   - Pushed to `origin/main`.
+
 
